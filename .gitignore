@@ -1,0 +1,7 @@
+/setup/env
+/bin/datastore
+/bin/temp
+.DS_Store
+*.idea
+*.pyc
+*.log

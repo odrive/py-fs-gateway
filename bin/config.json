@@ -1,0 +1,16 @@
+{
+  "util.handler.usage.interval.seconds": 1,
+  "util.handler.usage.count.max": 60,
+  "util.handler.auth.duration.seconds": 86400,
+
+  "wsgi.log.enable": true,
+  "wsgi.log.path": "server.log",
+
+  "controller.datastore.path": "datastore",
+
+  "handler.v2.metadata_file.temp.dir": "temp",
+  "handler.v2.metadata.temp.dir": "temp",
+  "handler.v2.file_thumbnail.temp.dir": "temp",
+
+  "handler.v2.auth.acl.path": "acl.json"
+}
