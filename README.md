@@ -35,8 +35,8 @@ setup/setup_mac.sh
   "wsgi.log.enable": true,
   "wsgi.log.path": "server.log",
 
-  "handler.v2.metadata_file.temp.dir": "temp",
   "handler.v2.metadata.temp.dir": "temp",
+  "handler.v2.metadata_file.temp.dir": "temp",
   "handler.v2.file_thumbnail.temp.dir": "temp",
   "handler.v2.auth.acl.path": "acl.json"
 }
@@ -54,6 +54,7 @@ Property | Description
 `util.handler.auth.expiration` | Session duration in minutes.  
 `wsgi.log.enable` | Set `true` to log every server request.
 `wsgi.log.path` | Relative or absolute path to server log.
+`handler.v2.metadata.temp.dir`| Temp staging directory for uploads.
 `handler.v2.metadata_file.temp.dir`| Temp staging directory for uploads.
 `handler.v2.file_thumbnail.temp.dir`| Temp caching directory for thumbnails.
 `handler.v2.auth.acl.path` | Where to get the access control file.
