@@ -69,8 +69,8 @@ Property | Description
 
 For example, to grant users write access to `/gateway/storage`, add the following keys to `/bin/acl.json`:
 
-```
 **Mac/Linux**
+```
 {
   "demo.path": "/gateway/storage",
   "demo.writable": true
