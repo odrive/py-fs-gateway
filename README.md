@@ -127,10 +127,21 @@ python3 run.py
 
 ## Gateway Shell
 
-Access server storage from the command line with Gateway Shell. 
-You can interactively access the file server or create scripts to automate access. 
+Access server storage from the command line with [Gateway Shell](https://github.com/odrive/gateway-api/blob/main/gateway-shell.md).
 
-*Download link and screen shots coming soon ...*
+Register an access key in `/bin/acl.json` and connect the gateway with the `gateway` command.
+
+```
+% gws.exe
+gws> gateway list
+
+No authorizations found.
+gws> gateway authorize demo http://127.0.0.1:9083 '{"key": "demo"}'
+Gateway successfully registered!
+gws> gateway list
+demo
+gws>
+```
 
 ## Gateway Sync
 
