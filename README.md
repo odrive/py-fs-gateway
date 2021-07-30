@@ -51,7 +51,7 @@ Property | Description
 `controller.datastore.path` | Where to store session files.
 `util.handler.usage.interval.seconds` | Sampling period for limiting usage.
 `util.handler.usage.count.max` | Maximum requests within usage interface. Requests beyond the max return 429 status code.
-`util.handler.auth.expiration` | Session duration in minutes.  
+`util.handler.auth.expiration` | Session duration in minutes. Requires client to get new access.token with refresh.token.
 `wsgi.log.enable` | Set `true` to log every server request.
 `wsgi.log.path` | Relative or absolute path to server log.
 `handler.v2.metadata.temp.dir`| Temp staging directory for uploads.
@@ -169,7 +169,8 @@ Property | Description
 
 Property | Description
 ---------|------------
-`access.token` | Required AUTHORIZATION header for subsequent API requests. Does not expire.
+`access.token` | Required AUTHORIZATION header for subsequent API requests.
+`refresh.token` | Required to get new access.token after session expires.
 `root.content.id` | `''` Session root folder ID is an empty string.
 
 **Response Status**

@@ -80,8 +80,6 @@ def load_path(dispatch_func):
             params['authorization']['path'] = _get_win_long_path(params['authorization']['path'])
 
         params['path'] = os.path.join(params['authorization']['path'], params['content.path'])
-        # params['path'] = os.path.expanduser(params['path'])
-        # params['path'] = os.path.abspath(params['path'])
         if not os.path.exists(params['path']):
             return {'code': '404', 'message': 'Not Found'}
 
