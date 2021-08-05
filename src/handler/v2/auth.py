@@ -218,7 +218,7 @@ def _refresh(refresh_token):
     return {
         'access.token': access_token,
         'refresh.token': refresh_token,
-        'root.content.id': str(base64.urlsafe_b64encode(b'0'), 'utf-8')
+        'root.content.id': ''
     }
 
 
