@@ -73,7 +73,7 @@ def load_path(dispatch_func):
             # Root.
             params['path'] = params['authorization']['path']
             return dispatch_func(environ, params)
-        params['content.path'] = base64.urlsafe_b64decode(params['content.id'].encode('utf-8')).decode('ascii')
+        params['content.path'] = base64.urlsafe_b64decode(params['content.id'].encode('utf-8')).decode('utf-8')
 
         # If Windows, convert to a "long" path to deal with the path length restriction
         if platform.system() == "Windows":
