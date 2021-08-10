@@ -80,7 +80,7 @@ def _patch_metadata_parent(environ, params):
     # Move.
     content_name = os.path.basename(params['path'])
     destination_content_path = base64.urlsafe_b64decode(params['parent.content.id'].encode('utf-8')).decode('utf-8')
-    new_path = f"{params['authorization']['path']}/{destination_content_path}/{content_name}"
+    new_path = os.path.join(params['authorization']['path'], destination_content_path, content_name)
     shutil.move(params['path'], new_path)
 
     # Success.
