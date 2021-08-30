@@ -12,7 +12,7 @@ def handle(environ):
     # PATH_INFO
     params = {
         # URI /v2/metadata_children/<content.id>
-        'content.id': environ['PATH_INFO'][22:] if len(environ['PATH_INFO']) > 22 else None,
+        'metadata.content.id': environ['PATH_INFO'][22:] if len(environ['PATH_INFO']) > 22 else None,
     }
 
     #
@@ -25,7 +25,7 @@ def handle(environ):
 
     delegate_func = '_{}{}'.format(
         environ['REQUEST_METHOD'].lower(),
-        '_metadata_children' if params['content.id'] else ''
+        '_metadata_children' if params['metadata.content.id'] else ''
     )
     if delegate_func in globals():
         return eval(delegate_func)(environ, params)

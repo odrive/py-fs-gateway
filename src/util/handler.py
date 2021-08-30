@@ -69,17 +69,17 @@ def load_path(dispatch_func):
     def wrapper(environ, params):
 
         # Convert content.id to absolute path.
-        if not params['content.id']:
+        if not params['metadata.content.id']:
             # Root.
             params['path'] = params['authorization']['path']
             return dispatch_func(environ, params)
-        params['content.path'] = base64.urlsafe_b64decode(params['content.id'].encode('utf-8')).decode('ascii')
+        params['metadata.content.path'] = base64.urlsafe_b64decode(params['metadata.content.id'].encode('utf-8')).decode('ascii')
 
         # If Windows, convert to a "long" path to deal with the path length restriction
         if platform.system() == "Windows":
             params['authorization']['path'] = _get_win_long_path(params['authorization']['path'])
 
-        params['path'] = os.path.join(params['authorization']['path'], params['content.path'])
+        params['path'] = os.path.join(params['authorization']['path'], params['metadata.content.path'])
         if not os.path.exists(params['path']):
             return {'code': '404', 'message': 'Not Found'}
 
@@ -160,25 +160,31 @@ def get_metadata(access_root, path):
 
     # base64 encoded relative path
     content_id = ''
+    parent_content_id = None
     if access_path:
         content_id = base64.urlsafe_b64encode(access_path.encode('utf-8')).decode('ascii')
+        parent_access_path = os.path.dirname(access_path)
+        if parent_access_path:
+            parent_content_id = base64.urlsafe_b64encode(access_path.encode('utf-8')).decode('ascii')
 
     # remap metadata
     if os.path.isdir(path):
         remapped_node = {
-            'content.id': content_id,
-            'content.name': os.path.basename(path),
-            'content.type': 'folder',
-            'content.modified': int(os.path.getmtime(path) * 1000),  # milliseconds since unix epoch
+            'metadata.content.id': content_id,
+            'metadata.content.parent.id': parent_content_id,
+            'metadata.content.name': os.path.basename(path),
+            'metadata.content.type': 'folder',
+            'metadata.content.modified': int(os.path.getmtime(path) * 1000),  # milliseconds since unix epoch
         }
     else:
         remapped_node = {
-            'content.id': content_id,
-            'content.name': os.path.basename(path),
-            'content.type': 'file',
-            'content.modified': int(os.path.getmtime(path) * 1000),  # milliseconds since unix epoch
-            'file.size': os.path.getsize(path),
-            'file.hash': f"{os.path.getsize(path)}{os.path.getmtime(path)}"
+            'metadata.content.id': content_id,
+            'metadata.content.parent.id': parent_content_id,
+            'metadata.content.name': os.path.basename(path),
+            'metadata.content.type': 'file',
+            'metadata.content.modified': int(os.path.getmtime(path) * 1000),  # milliseconds since unix epoch
+            'metadata.file.size': os.path.getsize(path),
+            'metadata.file.hash': f"{os.path.getsize(path)}{os.path.getmtime(path)}"
         }
 
     return remapped_node

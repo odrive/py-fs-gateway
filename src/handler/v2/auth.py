@@ -15,7 +15,7 @@ def handle(environ):
     params = {
         # From PATH_INFO
         # /v2/auth/<access.token>
-        'access.token': environ['PATH_INFO'][9:] if len(environ['PATH_INFO']) > 9 else None,
+        'auth.access.token': environ['PATH_INFO'][9:] if len(environ['PATH_INFO']) > 9 else None,
     }
 
     #
@@ -28,7 +28,7 @@ def handle(environ):
 
     delegate_func = '_{}{}'.format(
         environ['REQUEST_METHOD'].lower(),
-        '_auth' if params['access.token'] else ''
+        '_auth' if params['auth.access.token'] else ''
     )
     if delegate_func in globals():
         return eval(delegate_func)(environ, params)
@@ -53,7 +53,7 @@ def _post(environ, params):
     params.update({
         # From body.
         'key': None,
-        'refresh.token': None,
+        'auth.refresh.token': None,
     })
 
     # Load body.
@@ -64,7 +64,7 @@ def _post(environ, params):
     #
 
     # Required params.
-    if not (params['key'] or params['refresh.token']):
+    if not (params['key'] or params['auth.refresh.token']):
         return {
             'code': '400',
             'message': 'Missing key and refresh.token'
@@ -90,15 +90,15 @@ def _post(environ, params):
             'message': 'OK',
             'contentType': 'application/json',
             'content': json.dumps({
-                'access.token': authorization.get('access.token'),
-                'refresh.token': authorization.get('refresh.token'),
-                'root.content.id': authorization.get('root.content.id')
+                'auth.access.token': authorization.get('auth.access.token'),
+                'auth.refresh.token': authorization.get('auth.refresh.token'),
+                'auth.metadata.content.id': authorization.get('auth.metadata.content.id')
             }),
         }
 
     # Refresh access.token.
-    if params['refresh.token']:
-        authorization = _refresh(params['refresh.token'])
+    if params['auth.refresh.token']:
+        authorization = _refresh(params['auth.refresh.token'])
         if authorization is None:
             return {
                 'code': '403',
@@ -110,9 +110,9 @@ def _post(environ, params):
             'message': 'OK',
             'contentType': 'application/json',
             'content': json.dumps({
-                'access.token': authorization.get('access.token'),
-                'refresh.token': authorization.get('refresh.token'),
-                'root.content.id': authorization.get('root.content.id')
+                'auth.access.token': authorization.get('auth.access.token'),
+                'auth.refresh.token': authorization.get('auth.refresh.token'),
+                'auth.metadata.content.id': authorization.get('auth.metadata.content.id')
             }),
         }
 
@@ -126,10 +126,10 @@ def _post(environ, params):
 @util.handler.limit_usage
 @util.handler.handle_requests_exception
 def _delete_auth(environ, params):
-    assert params.get('access.token')
+    assert params.get('auth.access.token')
 
     # Check access.
-    access = controller.datastore.get(params['access.token'], 'access')
+    access = controller.datastore.get(params['auth.access.token'], 'access')
     if access is None:
         # Already gone.
         return {
@@ -138,8 +138,8 @@ def _delete_auth(environ, params):
         }
 
     # Delete access.
-    controller.datastore.delete(access['access.token'], 'access')
-    controller.datastore.delete(access['refresh.token'], 'refresh')
+    controller.datastore.delete(access['auth.access.token'], 'access')
+    controller.datastore.delete(access['auth.refresh.token'], 'refresh')
     return {
         'code': '200',
         'message': 'OK'
@@ -170,8 +170,8 @@ def _authorize(access_key):
         {
             'path': _acl.get(f"{access_key}.path"),
             'writable': _acl.get(f"{access_key}.writable") if _acl.get(f"{access_key}.writable") is True else False,
-            'access.token': access_token,
-            'refresh.token': refresh_token,
+            'auth.access.token': access_token,
+            'auth.refresh.token': refresh_token,
         },
         'access'
     )
@@ -185,9 +185,9 @@ def _authorize(access_key):
     )
 
     return {
-        'access.token': access_token,
-        'refresh.token': refresh_token,
-        'root.content.id': ''
+        'auth.access.token': access_token,
+        'auth.refresh.token': refresh_token,
+        'auth.metadata.content.id': ''
     }
 
 
@@ -209,16 +209,16 @@ def _refresh(refresh_token):
         {
             'path': refresh_auth.get('path'),
             'writable': refresh_auth.get('writable'),
-            'access.token': access_token,
-            'refresh.token': refresh_token,
+            'auth.access.token': access_token,
+            'auth.refresh.token': refresh_token,
         },
         'access'
     )
 
     return {
-        'access.token': access_token,
-        'refresh.token': refresh_token,
-        'root.content.id': ''
+        'auth.access.token': access_token,
+        'auth.refresh.token': refresh_token,
+        'auth.metadata.content.id': ''
     }
 
 

@@ -12,7 +12,7 @@ def handle(environ):
     params = {
         # From PATH_INFO:
         # /v2/file_thumbnail/<content.id>
-        'content.id': environ['PATH_INFO'][19:] if len(environ['PATH_INFO']) > 19 else None,
+        'metadata.content.id': environ['PATH_INFO'][19:] if len(environ['PATH_INFO']) > 19 else None,
     }
 
     #
@@ -25,7 +25,7 @@ def handle(environ):
 
     delegate_func = '_{}{}'.format(
         environ['REQUEST_METHOD'].lower(),
-        '_file_thumbnail' if params['content.id'] else ''
+        '_file_thumbnail' if params['metadata.content.id'] else ''
     )
     if delegate_func in globals():
         return eval(delegate_func)(environ, params)

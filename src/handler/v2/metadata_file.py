@@ -15,7 +15,7 @@ def handle(environ):
     # PATH_INFO
     params = {
         # URI /v2/metadata.file/<content.id>
-        'content.id': environ['PATH_INFO'][18:] if len(environ['PATH_INFO']) > 18 else None,
+        'metadata.content.id': environ['PATH_INFO'][18:] if len(environ['PATH_INFO']) > 18 else None,
     }
 
     #
@@ -28,7 +28,7 @@ def handle(environ):
 
     delegate_func = '_{}{}'.format(
         environ['REQUEST_METHOD'].lower(),
-        '_metadata_file' if params['content.id'] else ''
+        '_metadata_file' if params['metadata.content.id'] else ''
     )
     if delegate_func in globals():
         return eval(delegate_func)(environ, params)
@@ -61,41 +61,41 @@ def _post_metadata_file(environ, params):
     #
 
     params.update({
-        'content.name': None,
-        'content.modified': None,
-        'file.size': None,
+        'metadata.content.name': None,
+        'metadata.content.modified': None,
+        'metadata.file.size': None,
     })
 
     # Load headers.
     if environ.get('HTTP_X_GATEWAY_UPLOAD'):  # wsgi adds HTTP to the header, so client should use X_UPLOAD_JSON
         header_params = json.loads(environ['HTTP_X_GATEWAY_UPLOAD'])
         if header_params:
-            if header_params.get('content.name'):
-                params['content.name'] = header_params['content.name'].encode('ISO-8859-1').decode('unicode-escape')
-            params['file.size'] = header_params.get('file.size')
-            params['content.modified'] = header_params.get('content.modified')
+            if header_params.get('metadata.content.name'):
+                params['metadata.content.name'] = header_params['metadata.content.name'].encode('ISO-8859-1').decode('unicode-escape')
+            params['metadata.file.size'] = header_params.get('metadata.file.size')
+            params['metadata.content.modified'] = header_params.get('metadata.content.modified')
 
     #
     # Validate request.
     #
 
     # Validate create file params.
-    if params['file.size'] is None:
+    if params['metadata.file.size'] is None:
         return {
             'code': '400',
             'message': 'Missing file.size.'
         }
-    if not isinstance(params['file.size'], int):
+    if not isinstance(params['metadata.file.size'], int):
         return {
             'code': '400',
             'message': 'Invalid size.'
         }
-    if params['content.modified'] is None:
+    if params['metadata.content.modified'] is None:
         return {
             'code': '400',
             'message': 'Missing content.modified.'
         }
-    if not isinstance(params['content.modified'], int):
+    if not isinstance(params['metadata.content.modified'], int):
         return {
             'code': '400',
             'message': 'Invalid content.modified.'
@@ -113,14 +113,14 @@ def _post_metadata_file(environ, params):
                 out.write(chunk)
 
     # Preserve file modified time.
-    mod_time = params['content.modified']/1000  # convert to seconds
+    mod_time = params['metadata.content.modified']/1000  # convert to seconds
     os.utime(temp_path, (time.time(), mod_time))
 
     # Move temp into position.
-    shutil.move(temp_path, params['path'] + os.sep + params['content.name'])
+    shutil.move(temp_path, params['path'] + os.sep + params['metadata.content.name'])
 
     # Success.
-    metadata = util.handler.get_metadata(params['authorization']['path'], params['path'] + os.sep + params['content.name'])
+    metadata = util.handler.get_metadata(params['authorization']['path'], params['path'] + os.sep + params['metadata.content.name'])
     return {
         'code': '200',
         'message': 'OK',

@@ -11,7 +11,7 @@ def handle(environ):
     params = {
         # From PATH_INFO
         # /v1/file/<content.id>
-        'content.id': environ['PATH_INFO'][9:] if len(environ['PATH_INFO']) > 9 else None,
+        'metadata.content.id': environ['PATH_INFO'][9:] if len(environ['PATH_INFO']) > 9 else None,
     }
 
     #
@@ -24,7 +24,7 @@ def handle(environ):
 
     delegate_func = '_{}{}'.format(
         environ['REQUEST_METHOD'].lower(),
-        '_file' if params['content.id'] else ''
+        '_file' if params['metadata.content.id'] else ''
     )
     if delegate_func in globals():
         return eval(delegate_func)(environ, params)
@@ -45,7 +45,7 @@ def handle(environ):
 @util.handler.check_read_permission
 @util.handler.handle_file_system_io_error
 def _get_file(environ, params):
-    assert params.get('content.id')
+    assert params.get('metadata.content.id')
 
     #
     # Validate.
