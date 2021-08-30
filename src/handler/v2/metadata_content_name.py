@@ -13,7 +13,7 @@ def handle(environ):
     # PATH_INFO
     params = {
         # URI /v2/metadata_content_name/<content.id>
-        'metadata.content.id': environ['PATH_INFO'][18:] if len(environ['PATH_INFO']) > 18 else None,
+        'metadata.content.id': environ['PATH_INFO'][26:] if len(environ['PATH_INFO']) > 26 else None,
     }
 
     #
@@ -73,7 +73,7 @@ def _patch_metadata_content_name(environ, params):
             'code': '400',
             'message': 'Missing new.metadata.content.name'
         }
-    if params['old.metadata.content.name'] != os.path.basename(params['path']):
+    if params['old.metadata.content.name'] and params['old.metadata.content.name'] != os.path.basename(params['path']):
         return {
             'code': '400',
             'message': 'Not expected name.'
