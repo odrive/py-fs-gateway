@@ -14,8 +14,8 @@ def handle(environ):
 
     # PATH_INFO
     params = {
-        # URI /v2/metadata.file/<content.id>
-        'metadata.content.id': environ['PATH_INFO'][18:] if len(environ['PATH_INFO']) > 18 else None,
+        # URI /v2/gateway_metadata.file/<gateway.metadata.id>
+        'gateway.metadata.id': environ['PATH_INFO'][18:] if len(environ['PATH_INFO']) > 18 else None,
     }
 
     #
@@ -28,7 +28,7 @@ def handle(environ):
 
     delegate_func = '_{}{}'.format(
         environ['REQUEST_METHOD'].lower(),
-        '_metadata_file' if params['metadata.content.id'] else ''
+        '_metadata_file' if params['gateway.metadata.id'] else ''
     )
     if delegate_func in globals():
         return eval(delegate_func)(environ, params)
@@ -41,13 +41,13 @@ def handle(environ):
 
 
 # Upload file to root.
-# POST /v2/metadata_file
+# POST /v2/gateway_metadata_file
 def _post(environ, params):
     return _post_metadata_file(environ, params)
 
 
 # Upload file to folder.
-# POST /v2/metadata_file/<content.id>
+# POST /v2/gateway_metadata_file/<gateway.metadata.id>
 @util.handler.handle_unexpected_exception
 @util.handler.limit_usage
 @util.handler.check_authorization
@@ -61,44 +61,44 @@ def _post_metadata_file(environ, params):
     #
 
     params.update({
-        'metadata.content.name': None,
-        'metadata.content.modified': None,
-        'metadata.file.size': None,
+        'gateway.metadata.name': None,
+        'gateway.metadata.modified': None,
+        'gateway.metadata.file.size': None,
     })
 
     # Load headers.
     if environ.get('HTTP_X_GATEWAY_UPLOAD'):  # wsgi adds HTTP to the header, so client should use X_UPLOAD_JSON
         header_params = json.loads(environ['HTTP_X_GATEWAY_UPLOAD'])
         if header_params:
-            if header_params.get('metadata.content.name'):
-                params['metadata.content.name'] = header_params['metadata.content.name'].encode('ISO-8859-1').decode('unicode-escape')
-            params['metadata.file.size'] = header_params.get('metadata.file.size')
-            params['metadata.content.modified'] = header_params.get('metadata.content.modified')
+            if header_params.get('gateway.metadata.name'):
+                params['gateway.metadata.name'] = header_params['gateway.metadata.name'].encode('ISO-8859-1').decode('unicode-escape')
+            params['gateway.metadata.file.size'] = header_params.get('gateway.metadata.file.size')
+            params['gateway.metadata.modified'] = header_params.get('gateway.metadata.modified')
 
     #
     # Validate request.
     #
 
     # Validate create file params.
-    if params['metadata.file.size'] is None:
+    if params['gateway.metadata.file.size'] is None:
         return {
             'code': '400',
             'message': 'Missing file.size.'
         }
-    if not isinstance(params['metadata.file.size'], int):
+    if not isinstance(params['gateway.metadata.file.size'], int):
         return {
             'code': '400',
             'message': 'Invalid size.'
         }
-    if params['metadata.content.modified'] is None:
+    if params['gateway.metadata.modified'] is None:
         return {
             'code': '400',
-            'message': 'Missing content.modified.'
+            'message': 'Missing gateway.metdata.modified.'
         }
-    if not isinstance(params['metadata.content.modified'], int):
+    if not isinstance(params['gateway.metadata.modified'], int):
         return {
             'code': '400',
-            'message': 'Invalid content.modified.'
+            'message': 'Invalid gateway.metadata.modified.'
         }
 
     #
@@ -113,14 +113,14 @@ def _post_metadata_file(environ, params):
                 out.write(chunk)
 
     # Preserve file modified time.
-    mod_time = params['metadata.content.modified']/1000  # convert to seconds
+    mod_time = params['gateway.metadata.modified']/1000  # convert to seconds
     os.utime(temp_path, (time.time(), mod_time))
 
     # Move temp into position.
-    shutil.move(temp_path, params['path'] + os.sep + params['metadata.content.name'])
+    shutil.move(temp_path, params['path'] + os.sep + params['gateway.metadata.name'])
 
     # Success.
-    metadata = util.handler.get_metadata(params['authorization']['path'], params['path'] + os.sep + params['metadata.content.name'])
+    metadata = util.handler.get_metadata(params['authorization']['path'], params['path'] + os.sep + params['gateway.metadata.name'])
     return {
         'code': '200',
         'message': 'OK',
