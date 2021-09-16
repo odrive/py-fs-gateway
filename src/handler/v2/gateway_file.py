@@ -10,8 +10,8 @@ def handle(environ):
 
     params = {
         # From PATH_INFO
-        # /v1/file/<content.id>
-        'metadata.content.id': environ['PATH_INFO'][9:] if len(environ['PATH_INFO']) > 9 else None,
+        # /v1/gateway_file/<gateway.metadata.id>
+        'gateway.metadata.id': environ['PATH_INFO'][9:] if len(environ['PATH_INFO']) > 9 else None,
     }
 
     #
@@ -24,7 +24,7 @@ def handle(environ):
 
     delegate_func = '_{}{}'.format(
         environ['REQUEST_METHOD'].lower(),
-        '_file' if params['metadata.content.id'] else ''
+        '_file' if params['gateway.metadata.id'] else ''
     )
     if delegate_func in globals():
         return eval(delegate_func)(environ, params)
@@ -37,7 +37,7 @@ def handle(environ):
 
 
 # Download file.
-# GET /v2/file/<content.id>
+# GET /v2/gateway_file/<gateway.metadata.id>
 @util.handler.handle_unexpected_exception
 @util.handler.limit_usage
 @util.handler.check_authorization
@@ -45,7 +45,7 @@ def handle(environ):
 @util.handler.check_read_permission
 @util.handler.handle_file_system_io_error
 def _get_file(environ, params):
-    assert params.get('metadata.content.id')
+    assert params.get('gateway.metadata.id')
 
     #
     # Validate.
