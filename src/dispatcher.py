@@ -1,10 +1,10 @@
 import wsgi
 import util.handler
-import handler.v2.auth
+import handler.v2.gateway_auth
 import controller.datastore
-import handler.v2.metadata
-import handler.v2.metadata_file
-import handler.v2.file_thumbnail
+import handler.v2.gateway_metadata
+import handler.v2.gateway_metadata_file
+import handler.v2.gateway_file_thumbnail
 
 
 def dispatch(environ, start_response):
@@ -43,16 +43,16 @@ def update_config(properties):
     #
     # handler
     #
-    handler.v2.auth.update_config({
+    handler.v2.gateway_auth.update_config({
         'acl.path': properties['handler.v2.auth.acl.path']
     })
-    handler.v2.metadata_file.update_config({
+    handler.v2.gateway_metadata_file.update_config({
         'temp.dir': properties['handler.v2.metadata_file.temp.dir']
     })
-    handler.v2.metadata.update_config({
+    handler.v2.gateway_metadata.update_config({
         'temp.dir': properties['handler.v2.metadata.temp.dir']
     })
-    handler.v2.file_thumbnail.update_config({
+    handler.v2.gateway_file_thumbnail.update_config({
         'temp.dir': properties['handler.v2.file_thumbnail.temp.dir']
     })
 
