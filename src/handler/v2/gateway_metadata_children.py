@@ -11,8 +11,8 @@ def handle(environ):
 
     # PATH_INFO
     params = {
-        # URI /v2/metadata_children/<content.id>
-        'metadata.content.id': environ['PATH_INFO'][22:] if len(environ['PATH_INFO']) > 22 else None,
+        # URI /v2/gateway_metadata_children/<gateway.metadata.id>
+        'gateway.metadata.id': environ['PATH_INFO'][22:] if len(environ['PATH_INFO']) > 22 else None,
     }
 
     #
@@ -25,7 +25,7 @@ def handle(environ):
 
     delegate_func = '_{}{}'.format(
         environ['REQUEST_METHOD'].lower(),
-        '_metadata_children' if params['metadata.content.id'] else ''
+        '_metadata_children' if params['gateway.metadata.id'] else ''
     )
     if delegate_func in globals():
         return eval(delegate_func)(environ, params)
@@ -38,7 +38,7 @@ def handle(environ):
 
 
 # List root.
-# GET /v2/metadata_children
+# GET /v2/gateway_metadata_children
 @util.handler.handle_unexpected_exception
 @util.handler.limit_usage
 @util.handler.check_authorization
@@ -50,7 +50,7 @@ def _get(environ, params):
 
 
 # List folder.
-# GET /v2/metadata_children/<content.id>
+# GET /v2/gateway_metadata_children/<gateway.metadata.id>
 @util.handler.handle_unexpected_exception
 @util.handler.limit_usage
 @util.handler.check_authorization
