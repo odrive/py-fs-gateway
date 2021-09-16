@@ -11,8 +11,8 @@ def handle(environ):
 
     params = {
         # From PATH_INFO:
-        # /v2/file_thumbnail/<content.id>
-        'metadata.content.id': environ['PATH_INFO'][19:] if len(environ['PATH_INFO']) > 19 else None,
+        # /v2/gateway_file_thumbnail/<gateway.metadata.id>
+        'gateway.metadata.id': environ['PATH_INFO'][19:] if len(environ['PATH_INFO']) > 19 else None,
     }
 
     #
@@ -25,7 +25,7 @@ def handle(environ):
 
     delegate_func = '_{}{}'.format(
         environ['REQUEST_METHOD'].lower(),
-        '_file_thumbnail' if params['metadata.content.id'] else ''
+        '_file_thumbnail' if params['gateway.metadata.id'] else ''
     )
     if delegate_func in globals():
         return eval(delegate_func)(environ, params)
@@ -38,7 +38,7 @@ def handle(environ):
 
 
 # Download icon.
-# GET /v2/file_thumbnail/<content.id>
+# GET /v2/gateway_file_thumbnail/<gateway.metadata.id>
 @util.handler.handle_unexpected_exception
 @util.handler.limit_usage
 @util.handler.check_authorization
