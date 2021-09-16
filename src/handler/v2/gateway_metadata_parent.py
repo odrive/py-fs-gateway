@@ -13,8 +13,8 @@ def handle(environ):
 
     # PATH_INFO
     params = {
-        # URI /v2/metadata_content_parent/<content.id>
-        'metadata.content.id': environ['PATH_INFO'][28:] if len(environ['PATH_INFO']) > 28 else None,
+        # URI /v2/gateway_metadata_parent/<gateway.metadata.id>
+        'gateway.metadata.id': environ['PATH_INFO'][28:] if len(environ['PATH_INFO']) > 28 else None,
     }
 
     #
@@ -27,7 +27,7 @@ def handle(environ):
 
     delegate_func = '_{}{}'.format(
         environ['REQUEST_METHOD'].lower(),
-        '_metadata_content_parent' if params['metadata.content.id'] else ''
+        '_metadata_parent' if params['gateway.metadata.id'] else ''
     )
     if delegate_func in globals():
         return eval(delegate_func)(environ, params)
@@ -40,37 +40,37 @@ def handle(environ):
 
 
 # Move file or folder.
-# PATCH /v2/metadata_content_parent/<content.id>
+# PATCH /v2/gateway_metadata_parent/<gateway.metadata.id>
 @util.handler.handle_unexpected_exception
 @util.handler.limit_usage
 @util.handler.check_authorization
 @util.handler.load_path
 @util.handler.check_write_permission
 @util.handler.handle_file_system_io_error
-def _patch_metadata_content_parent(environ, params):
-    assert params.get('metadata.content.id')
+def _patch_metadata_parent(environ, params):
+    assert params.get('gateway.metadata.id')
 
     #
     # Load.
     #
 
     params.update({
-        'new.metadata.content.parent.id': None,
+        'new.gateway.metadata.parent.id': None,
     })
 
     # Load body.
     body = json.load(environ['wsgi.input'])
-    params['new.metadata.content.parent.id'] = body.get('new.metadata.content.parent.id')
+    params['new.gateway.metadata.parent.id'] = body.get('new.gateway.metadata.parent.id')
 
     #
     # Validate.
     #
 
     # Check new parent.
-    if params['new.metadata.content.parent.id'] is None:
+    if params['new.gateway.metadata.parent.id'] is None:
         return {
             'code': '400',
-            'message': 'Missing new.metadata.content.parent.id.'
+            'message': 'Missing new.gateway.metadata.parent.id.'
         }
 
     #
@@ -79,7 +79,7 @@ def _patch_metadata_content_parent(environ, params):
 
     # Move.
     content_name = os.path.basename(params['path'])
-    destination_content_path = base64.urlsafe_b64decode(params['new.metadata.content.parent.id'].encode('utf-8')).decode('utf-8')
+    destination_content_path = base64.urlsafe_b64decode(params['new.gateway.metadata.parent.id'].encode('utf-8')).decode('utf-8')
     new_path = os.path.join(params['authorization']['path'], destination_content_path, content_name)
     shutil.move(params['path'], new_path)
 
