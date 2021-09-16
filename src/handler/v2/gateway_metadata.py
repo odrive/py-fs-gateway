@@ -13,8 +13,8 @@ def handle(environ):
     #
 
     params = {
-        # From PATH_INFO: /v2/metadata/<content.id>
-        'metadata.content.id': environ['PATH_INFO'][13:] if len(environ['PATH_INFO']) > 13 else None,
+        # From PATH_INFO: /v2/gateway_metadata/<gateway.metadata.id>
+        'gateway.metadata.id': environ['PATH_INFO'][13:] if len(environ['PATH_INFO']) > 13 else None,
     }
 
     #
@@ -27,7 +27,7 @@ def handle(environ):
 
     delegate_func = '_{}{}'.format(
         environ['REQUEST_METHOD'].lower(),
-        '_metadata' if params['metadata.content.id'] else ''
+        '_metadata' if params['gateway.metadata.id'] else ''
     )
     if delegate_func in globals():
         return eval(delegate_func)(environ, params)
@@ -40,7 +40,7 @@ def handle(environ):
 
 
 # Delete root folder.
-# DELETE /v2/metadata
+# DELETE /v2/gateway_metadata
 @util.handler.handle_unexpected_exception
 @util.handler.limit_usage
 @util.handler.check_authorization
@@ -53,7 +53,7 @@ def _delete(environ, params):
 
 
 # Delete file or folder.
-# DELETE /v2/metadata/<content.id>
+# DELETE /v2/gateway_metadata/<gateway.metadata.id>
 @util.handler.handle_unexpected_exception
 @util.handler.limit_usage
 @util.handler.check_authorization
@@ -61,14 +61,14 @@ def _delete(environ, params):
 @util.handler.check_write_permission
 @util.handler.handle_file_system_io_error
 def _delete_metadata(environ, params):
-    assert params.get('metadata.content.id')
+    assert params.get('gateway.metadata.id')
 
     #
     # Validate.
     #
 
     # Check path.
-    if params['metadata.content.id'] is None:
+    if params['gateway.metadata.id'] is None:
         # handle root
         return {
             'code': '403',
@@ -94,7 +94,7 @@ def _delete_metadata(environ, params):
 
 
 # Get metadata for root folder.
-# GET /v2/metadata
+# GET /v2/gateway_metadata
 @util.handler.handle_unexpected_exception
 @util.handler.limit_usage
 @util.handler.check_authorization
@@ -107,15 +107,15 @@ def _get(environ, params):
         'message': 'ok',
         'contentType': 'application/json',
         'content': json.dumps({
-            'metadata.content.id': '',
-            'metadata.content.type': 'folder',
-            'metadata.content.name': '',
+            'gateway.metadata.id': '',
+            'gateway.metadata.type': 'folder',
+            'gateway.metadata.name': '',
         })
     }
 
 
 # Get file or folder metadata.
-# GET /v2/metadata/<content.id>
+# GET /v2/gateway_metadata/<gateway.metadata.id>
 @util.handler.handle_unexpected_exception
 @util.handler.limit_usage
 @util.handler.check_authorization
@@ -123,7 +123,7 @@ def _get(environ, params):
 @util.handler.check_read_permission
 @util.handler.handle_file_system_io_error
 def _get_metadata(environ, params):
-    assert params.get('metadata.content.id')
+    assert params.get('gateway.metadata.id')
 
     metadata = util.handler.get_metadata(params['authorization']['path'], params['path'])
     return {
@@ -135,7 +135,7 @@ def _get_metadata(environ, params):
 
 
 # Update file.
-# PUT /v2/metadata/<content.id>
+# PUT /v2/gateway_metadata/<gateway.metadata.id>
 @util.handler.handle_unexpected_exception
 @util.handler.limit_usage
 @util.handler.check_authorization
@@ -143,35 +143,35 @@ def _get_metadata(environ, params):
 @util.handler.check_write_permission
 @util.handler.handle_file_system_io_error
 def _put_metadata(environ, params):
-    assert params.get('metadata.content.id')
+    assert params.get('gateway.metadata.id')
 
     #
     # Load.
     #
 
     params.update({
-        'metadata.file.size': None,
-        'metadata.content.modified': None,
+        'gateway.metadata.file.size': None,
+        'gateway.metadata.modified': None,
     })
 
     # From headers.
     if environ.get('HTTP_X_GATEWAY_UPLOAD'):  # wsgi adds HTTP to the header, so client should use X_UPLOAD_JSON
         header_params = json.loads(environ['HTTP_X_GATEWAY_UPLOAD'])
         if header_params:
-            params['metadata.content.modified'] = header_params.get('metadata.content.modified')
-            params['metadata.file.size'] = header_params.get('metadata.file.size')
+            params['gateway.metadata.modified'] = header_params.get('gateway.metadata.modified')
+            params['gateway.metadata.file.size'] = header_params.get('gateway.metadata.file.size')
 
     #
     # Validate.
     #
 
     # Validate type.
-    if params['metadata.file.size'] and not isinstance(params['metadata.file.size'], int):
+    if params['gateway.metadata.file.size'] and not isinstance(params['gateway.metadata.file.size'], int):
         return {
             'code': '400',
             'message': 'Invalid size.'
         }
-    if params['metadata.content.modified'] and not isinstance(params['metadata.content.modified'], int):
+    if params['gateway.metadata.modified'] and not isinstance(params['gateway.metadata.modified'], int):
         return {
             'code': '400',
             'message': 'Invalid content.modified.'
@@ -189,7 +189,7 @@ def _put_metadata(environ, params):
                 out.write(chunk)
 
     # Preserve file modified time.
-    mod_time = params['metadata.content.modified']/1000  # convert to seconds
+    mod_time = params['gateway.metadata.modified']/1000  # convert to seconds
     os.utime(temp_path, (time.time(), mod_time))
 
     # Replace file with temp.
