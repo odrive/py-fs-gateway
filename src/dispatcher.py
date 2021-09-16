@@ -2,7 +2,6 @@ import wsgi
 import util.handler
 import handler.v2.gateway_auth
 import controller.datastore
-import handler.v2.gateway_metadata
 import handler.v2.gateway_metadata_file
 import handler.v2.gateway_file_thumbnail
 
@@ -48,9 +47,6 @@ def update_config(properties):
     })
     handler.v2.gateway_metadata_file.update_config({
         'temp.dir': properties['handler.v2.gateway_metadata_file.temp.dir']
-    })
-    handler.v2.gateway_metadata.update_config({
-        'temp.dir': properties['handler.v2.gateway_metadata.temp.dir']
     })
     handler.v2.gateway_file_thumbnail.update_config({
         'temp.dir': properties['handler.v2.gateway_file_thumbnail.temp.dir']
