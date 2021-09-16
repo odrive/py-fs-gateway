@@ -1,5 +1,4 @@
 import os
-import base64
 import json
 import random
 import string
@@ -14,8 +13,8 @@ def handle(environ):
 
     params = {
         # From PATH_INFO
-        # /v2/auth/<access.token>
-        'auth.access.token': environ['PATH_INFO'][9:] if len(environ['PATH_INFO']) > 9 else None,
+        # /v2/gateway_auth/<gateway.access.token>
+        'gateway.auth.access.token': environ['PATH_INFO'][9:] if len(environ['PATH_INFO']) > 9 else None,
     }
 
     #
@@ -28,7 +27,7 @@ def handle(environ):
 
     delegate_func = '_{}{}'.format(
         environ['REQUEST_METHOD'].lower(),
-        '_auth' if params['auth.access.token'] else ''
+        '_auth' if params['gateway.auth.access.token'] else ''
     )
     if delegate_func in globals():
         return eval(delegate_func)(environ, params)
@@ -41,7 +40,7 @@ def handle(environ):
 
 
 # Sign in.
-# POST /v2/auth
+# POST /v2/gateway_auth
 @util.handler.handle_unexpected_exception
 @util.handler.limit_usage
 @util.handler.handle_requests_exception
@@ -53,7 +52,7 @@ def _post(environ, params):
     params.update({
         # From body.
         'key': None,
-        'auth.refresh.token': None,
+        'gateway.auth.refresh.token': None,
     })
 
     # Load body.
@@ -64,7 +63,7 @@ def _post(environ, params):
     #
 
     # Required params.
-    if not (params['key'] or params['auth.refresh.token']):
+    if not (params['key'] or params['gateway.auth.refresh.token']):
         return {
             'code': '400',
             'message': 'Missing key and refresh.token'
@@ -90,15 +89,15 @@ def _post(environ, params):
             'message': 'OK',
             'contentType': 'application/json',
             'content': json.dumps({
-                'auth.access.token': authorization.get('auth.access.token'),
-                'auth.refresh.token': authorization.get('auth.refresh.token'),
-                'auth.metadata.content.id': authorization.get('auth.metadata.content.id')
+                'gateway.auth.access.token': authorization.get('gateway.auth.access.token'),
+                'gateway.auth.refresh.token': authorization.get('gateway.auth.refresh.token'),
+                'gateway.auth.metadata.id': authorization.get('gateway.auth.metadata.id')
             }),
         }
 
     # Refresh access.token.
-    if params['auth.refresh.token']:
-        authorization = _refresh(params['auth.refresh.token'])
+    if params['gateway.auth.refresh.token']:
+        authorization = _refresh(params['gateway.auth.refresh.token'])
         if authorization is None:
             return {
                 'code': '403',
@@ -110,9 +109,9 @@ def _post(environ, params):
             'message': 'OK',
             'contentType': 'application/json',
             'content': json.dumps({
-                'auth.access.token': authorization.get('auth.access.token'),
-                'auth.refresh.token': authorization.get('auth.refresh.token'),
-                'auth.metadata.content.id': authorization.get('auth.metadata.content.id')
+                'gateway.auth.access.token': authorization.get('gateway.auth.access.token'),
+                'gateway.auth.refresh.token': authorization.get('gateway.auth.refresh.token'),
+                'gateway.auth.metadata.id': authorization.get('gateway.auth.metadata.id')
             }),
         }
 
@@ -121,15 +120,15 @@ def _post(environ, params):
 
 
 # Sign out.
-# DELETE /v2/auth/<access.token>
+# DELETE /v2/gateway_auth/<gateway.access.token>
 @util.handler.handle_unexpected_exception
 @util.handler.limit_usage
 @util.handler.handle_requests_exception
 def _delete_auth(environ, params):
-    assert params.get('auth.access.token')
+    assert params.get('gateway.auth.access.token')
 
     # Check access.
-    access = controller.datastore.get(params['auth.access.token'], 'access')
+    access = controller.datastore.get(params['gateway.auth.access.token'], 'access')
     if access is None:
         # Already gone.
         return {
@@ -138,8 +137,8 @@ def _delete_auth(environ, params):
         }
 
     # Delete access.
-    controller.datastore.delete(access['auth.access.token'], 'access')
-    controller.datastore.delete(access['auth.refresh.token'], 'refresh')
+    controller.datastore.delete(access['gateway.auth.access.token'], 'access')
+    controller.datastore.delete(access['gateway.auth.refresh.token'], 'refresh')
     return {
         'code': '200',
         'message': 'OK'
@@ -170,8 +169,8 @@ def _authorize(access_key):
         {
             'path': _acl.get(f"{access_key}.path"),
             'writable': _acl.get(f"{access_key}.writable") if _acl.get(f"{access_key}.writable") is True else False,
-            'auth.access.token': access_token,
-            'auth.refresh.token': refresh_token,
+            'gateway.auth.access.token': access_token,
+            'gateway.auth.refresh.token': refresh_token,
         },
         'access'
     )
@@ -185,9 +184,9 @@ def _authorize(access_key):
     )
 
     return {
-        'auth.access.token': access_token,
-        'auth.refresh.token': refresh_token,
-        'auth.metadata.content.id': ''
+        'gateway.auth.access.token': access_token,
+        'gateway.auth.refresh.token': refresh_token,
+        'gateway.auth.metadata.id': ''
     }
 
 
@@ -209,16 +208,16 @@ def _refresh(refresh_token):
         {
             'path': refresh_auth.get('path'),
             'writable': refresh_auth.get('writable'),
-            'auth.access.token': access_token,
-            'auth.refresh.token': refresh_token,
+            'gateway.auth.access.token': access_token,
+            'gateway.auth.refresh.token': refresh_token,
         },
         'access'
     )
 
     return {
-        'auth.access.token': access_token,
-        'auth.refresh.token': refresh_token,
-        'auth.metadata.content.id': ''
+        'gateway.auth.access.token': access_token,
+        'gateway.auth.refresh.token': refresh_token,
+        'gateway.auth.metadata.id': ''
     }
 
 
