@@ -14,7 +14,7 @@ def handle(environ):
 
     params = {
         # From PATH_INFO: /v2/gateway_metadata/<gateway.metadata.id>
-        'gateway.metadata.id': environ['PATH_INFO'][13:] if len(environ['PATH_INFO']) > 13 else None,
+        'gateway.metadata.id': environ['PATH_INFO'][21:] if len(environ['PATH_INFO']) > 21 else None,
     }
 
     #

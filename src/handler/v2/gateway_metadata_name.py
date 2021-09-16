@@ -12,7 +12,7 @@ def handle(environ):
 
     # PATH_INFO
     params = {
-        # URI /v2/gateway_metadata_content_name/<gateway.metadata.id>
+        # URI /v2/gateway_metadata_name/<gateway.metadata.id>
         'gateway.metadata.id': environ['PATH_INFO'][26:] if len(environ['PATH_INFO']) > 26 else None,
     }
 
@@ -39,7 +39,7 @@ def handle(environ):
 
 
 # Rename file or folder.
-# PATCH /v2/gateway_metadata_content_name/<gateway.metadata.id>
+# PATCH /v2/gateway_metadata_name/<gateway.metadata.id>
 @util.handler.handle_unexpected_exception
 @util.handler.limit_usage
 @util.handler.check_authorization

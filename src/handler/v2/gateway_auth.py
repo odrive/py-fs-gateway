@@ -14,7 +14,7 @@ def handle(environ):
     params = {
         # From PATH_INFO
         # /v2/gateway_auth/<gateway.access.token>
-        'gateway.auth.access.token': environ['PATH_INFO'][9:] if len(environ['PATH_INFO']) > 9 else None,
+        'gateway.auth.access.token': environ['PATH_INFO'][17:] if len(environ['PATH_INFO']) > 17 else None,
     }
 
     #
