@@ -13,7 +13,7 @@ def handle(environ):
 
     params = {
         # From PATH_INFO
-        # /v2/gateway_auth/<gateway.access.token>
+        # /v2/gateway_auth/<gateway.auth.access.token>
         'gateway.auth.access.token': environ['PATH_INFO'][17:] if len(environ['PATH_INFO']) > 17 else None,
     }
 
@@ -27,7 +27,7 @@ def handle(environ):
 
     delegate_func = '_{}{}'.format(
         environ['REQUEST_METHOD'].lower(),
-        '_auth' if params['gateway.auth.access.token'] else ''
+        '_gateway_auth' if params['gateway.auth.access.token'] else ''
     )
     if delegate_func in globals():
         return eval(delegate_func)(environ, params)
@@ -120,11 +120,11 @@ def _post(environ, params):
 
 
 # Sign out.
-# DELETE /v2/gateway_auth/<gateway.access.token>
+# DELETE /v2/gateway_auth/<gateway.auth.access.token>
 @util.handler.handle_unexpected_exception
 @util.handler.limit_usage
 @util.handler.handle_requests_exception
-def _delete_auth(environ, params):
+def _delete_gateway_auth(environ, params):
     assert params.get('gateway.auth.access.token')
 
     # Check access.

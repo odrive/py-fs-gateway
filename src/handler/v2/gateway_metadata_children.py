@@ -25,7 +25,7 @@ def handle(environ):
 
     delegate_func = '_{}{}'.format(
         environ['REQUEST_METHOD'].lower(),
-        '_metadata_children' if params['gateway.metadata.id'] else ''
+        '_gateway_metadata' if params['gateway.metadata.id'] else ''
     )
     if delegate_func in globals():
         return eval(delegate_func)(environ, params)
@@ -57,7 +57,7 @@ def _get(environ, params):
 @util.handler.load_path
 @util.handler.check_read_permission
 @util.handler.handle_file_system_io_error
-def _get_metadata_children(environ, params):
+def _get_gateway_metadata(environ, params):
     return _list_folder(environ, params)
 
 

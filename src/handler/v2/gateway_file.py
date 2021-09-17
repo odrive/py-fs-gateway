@@ -24,7 +24,7 @@ def handle(environ):
 
     delegate_func = '_{}{}'.format(
         environ['REQUEST_METHOD'].lower(),
-        '_file' if params['gateway.metadata.id'] else ''
+        '_gateway_metadata' if params['gateway.metadata.id'] else ''
     )
     if delegate_func in globals():
         return eval(delegate_func)(environ, params)
@@ -44,7 +44,7 @@ def handle(environ):
 @util.handler.load_path
 @util.handler.check_read_permission
 @util.handler.handle_file_system_io_error
-def _get_file(environ, params):
+def _get_gateway_metadata(environ, params):
     assert params.get('gateway.metadata.id')
 
     #
