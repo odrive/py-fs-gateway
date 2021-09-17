@@ -73,13 +73,15 @@ def load_path(dispatch_func):
             # Root.
             params['server.path'] = params['authorization']['gateway.auth.path']
             return dispatch_func(environ, params)
-        params['gateway.metadata.path'] = base64.urlsafe_b64decode(params['gateway.metadata.id'].encode('utf-8')).decode('utf-8')
 
         # If Windows, convert to a "long" path to deal with the path length restriction
         if platform.system() == "Windows":
             params['authorization']['gateway.auth.path'] = _get_win_long_path(params['authorization']['gateway.auth.path'])
 
-        params['server.path'] = os.path.join(params['authorization']['gateway.auth.path'], params['gateway.metadata.path'])
+        params['server.path'] = os.path.join(
+            params['authorization']['gateway.auth.path'],
+            base64.urlsafe_b64decode(params['gateway.metadata.id'].encode('utf-8')).decode('utf-8')
+        )
         if not os.path.exists(params['server.path']):
             return {'code': '404', 'message': 'Not Found'}
 
