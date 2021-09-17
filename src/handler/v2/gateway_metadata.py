@@ -110,6 +110,7 @@ def _get(environ, params):
             'gateway.metadata.id': '',
             'gateway.metadata.type': 'folder',
             'gateway.metadata.name': '',
+            'gateway.metadata.modified': None,
         })
     }
 
