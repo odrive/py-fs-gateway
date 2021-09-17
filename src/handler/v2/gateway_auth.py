@@ -167,7 +167,7 @@ def _authorize(access_key):
     controller.datastore.put(
         access_token,
         {
-            'path': _acl.get(f"{access_key}.path"),
+            'gateway.auth.path': _acl.get(f"{access_key}.path"),
             'writable': _acl.get(f"{access_key}.writable") if _acl.get(f"{access_key}.writable") is True else False,
             'gateway.auth.access.token': access_token,
             'gateway.auth.refresh.token': refresh_token,
@@ -177,7 +177,7 @@ def _authorize(access_key):
     controller.datastore.put(
         refresh_token,
         {
-            'path': _acl.get(f"{access_key}.path"),
+            'gateway.auth.path': _acl.get(f"{access_key}.path"),
             'writable': _acl.get(f"{access_key}.writable")  if _acl.get(f"{access_key}.writable") is True else False,
         },
         'refresh'
@@ -206,7 +206,7 @@ def _refresh(refresh_token):
     controller.datastore.put(
         access_token,
         {
-            'path': refresh_auth.get('path'),
+            'gateway.auth.path': refresh_auth.get('gateway.auth.path'),
             'writable': refresh_auth.get('writable'),
             'gateway.auth.access.token': access_token,
             'gateway.auth.refresh.token': refresh_token,

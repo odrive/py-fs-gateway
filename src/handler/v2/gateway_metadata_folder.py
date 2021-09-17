@@ -100,7 +100,7 @@ def _create_folder(environ, params):
     # todo - preserve the folder modified
 
     # send new content
-    metadata = util.handler.get_metadata(params['authorization']['path'], new_folder_path)
+    metadata = util.handler.get_metadata(params['authorization']['gateway.auth.path'], new_folder_path)
     return {
         'code': '200',
         'message': 'OK',

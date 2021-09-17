@@ -88,7 +88,7 @@ def _patch_gateway_metadata(environ, params):
     shutil.move(params['server.path'], new_path)
 
     # Success.
-    metadata = util.handler.get_metadata(params['authorization']['path'], new_path)
+    metadata = util.handler.get_metadata(params['authorization']['gateway.auth.path'], new_path)
     return {
         'code': '200',
         'message': 'OK',

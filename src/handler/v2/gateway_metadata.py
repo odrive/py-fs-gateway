@@ -126,7 +126,7 @@ def _get(environ, params):
 def _get_gateway_metadata(environ, params):
     assert params.get('gateway.metadata.id')
 
-    metadata = util.handler.get_metadata(params['authorization']['path'], params['server.path'])
+    metadata = util.handler.get_metadata(params['authorization']['gateway.auth.path'], params['server.path'])
     return {
         'code': '200',
         'message': 'OK',

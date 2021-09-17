@@ -120,7 +120,7 @@ def _post_gateway_metadata(environ, params):
     shutil.move(temp_path, params['server.path'] + os.sep + params['gateway.metadata.name'])
 
     # Success.
-    metadata = util.handler.get_metadata(params['authorization']['path'], params['server.path'] + os.sep + params['gateway.metadata.name'])
+    metadata = util.handler.get_metadata(params['authorization']['gateway.auth.path'], params['server.path'] + os.sep + params['gateway.metadata.name'])
     return {
         'code': '200',
         'message': 'OK',
@@ -191,7 +191,7 @@ def _put_gateway_metadata(environ, params):
     shutil.move(temp_path, params['server.path'])
 
     # Success.
-    metadata = util.handler.get_metadata(params['authorization']['path'], params['server.path'])
+    metadata = util.handler.get_metadata(params['authorization']['gateway.auth.path'], params['server.path'])
     return {
         'code': '200',
         'message': 'OK',
