@@ -168,7 +168,7 @@ def _authorize(access_key):
         access_token,
         {
             'gateway.auth.path': _acl.get(f"{access_key}.path"),
-            'writable': _acl.get(f"{access_key}.writable") if _acl.get(f"{access_key}.writable") is True else False,
+            'gateway.auth.writable': _acl.get(f"{access_key}.writable") if _acl.get(f"{access_key}.writable") is True else False,
             'gateway.auth.access.token': access_token,
             'gateway.auth.refresh.token': refresh_token,
         },
@@ -178,7 +178,7 @@ def _authorize(access_key):
         refresh_token,
         {
             'gateway.auth.path': _acl.get(f"{access_key}.path"),
-            'writable': _acl.get(f"{access_key}.writable")  if _acl.get(f"{access_key}.writable") is True else False,
+            'gateway.auth.writable': _acl.get(f"{access_key}.writable")  if _acl.get(f"{access_key}.writable") is True else False,
         },
         'refresh'
     )
@@ -207,7 +207,7 @@ def _refresh(refresh_token):
         access_token,
         {
             'gateway.auth.path': refresh_auth.get('gateway.auth.path'),
-            'writable': refresh_auth.get('writable'),
+            'gateway.auth.writable': refresh_auth.get('gateway.auth.writable'),
             'gateway.auth.access.token': access_token,
             'gateway.auth.refresh.token': refresh_token,
         },

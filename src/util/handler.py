@@ -111,7 +111,7 @@ def check_write_permission(dispatch_func):
             return {'code': '403', 'message': 'Unauthorized'}
 
         # check write permission
-        if not params['authorization'].get('writable'):
+        if not params['authorization'].get('gateway.auth.writable'):
             return {'code': '403', 'message': 'Read Only'}
 
         # dispatch
