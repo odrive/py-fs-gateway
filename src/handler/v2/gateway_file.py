@@ -52,7 +52,7 @@ def _get_gateway_metadata(environ, params):
     #
 
     # Check file.
-    if not os.path.isfile(params['path']):
+    if not os.path.isfile(params['server.path']):
         # Not file.
         return {
             'code': '400',
@@ -64,7 +64,7 @@ def _get_gateway_metadata(environ, params):
     #
 
     # Stream file data.
-    f = open(params['path'], 'rb')
+    f = open(params['server.path'], 'rb')
     return {
         'code': '200',
         'message': 'OK',

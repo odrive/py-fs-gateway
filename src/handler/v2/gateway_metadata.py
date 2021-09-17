@@ -79,12 +79,12 @@ def _delete_gateway_metadata(environ, params):
     # Execute.
     #
 
-    if os.path.isdir(params['path']):
+    if os.path.isdir(params['server.path']):
         # delete folder
-        shutil.rmtree(params['path'])
+        shutil.rmtree(params['server.path'])
     else:
         # delete file
-        os.remove(params['path'])
+        os.remove(params['server.path'])
 
     # Success.
     return {
@@ -126,7 +126,7 @@ def _get(environ, params):
 def _get_gateway_metadata(environ, params):
     assert params.get('gateway.metadata.id')
 
-    metadata = util.handler.get_metadata(params['authorization']['path'], params['path'])
+    metadata = util.handler.get_metadata(params['authorization']['path'], params['server.path'])
     return {
         'code': '200',
         'message': 'OK',

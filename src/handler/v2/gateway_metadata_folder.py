@@ -93,7 +93,7 @@ def _create_folder(environ, params):
         }
 
     # Create new folder
-    new_folder_path = params['path'] + os.sep + params['gateway.metadata.name']
+    new_folder_path = params['server.path'] + os.sep + params['gateway.metadata.name']
     os.mkdir(new_folder_path)
 
     # Preserve modified

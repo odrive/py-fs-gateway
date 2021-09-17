@@ -73,7 +73,7 @@ def _patch_gateway_metadata(environ, params):
             'code': '400',
             'message': 'Missing new.gateway.metadata.name'
         }
-    if params['old.gateway.metadata.name'] and params['old.gateway.metadata.name'] != os.path.basename(params['path']):
+    if params['old.gateway.metadata.name'] and params['old.gateway.metadata.name'] != os.path.basename(params['server.path']):
         return {
             'code': '400',
             'message': 'Not expected name.'
@@ -84,8 +84,8 @@ def _patch_gateway_metadata(environ, params):
     #
 
     # Rename.
-    new_path = os.path.dirname(params['path']) + os.sep + params['new.gateway.metadata.name']
-    shutil.move(params['path'], new_path)
+    new_path = os.path.dirname(params['server.path']) + os.sep + params['new.gateway.metadata.name']
+    shutil.move(params['server.path'], new_path)
 
     # Success.
     metadata = util.handler.get_metadata(params['authorization']['path'], new_path)

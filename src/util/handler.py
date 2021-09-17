@@ -71,7 +71,7 @@ def load_path(dispatch_func):
         # Convert gateway.metadata.id to absolute path.
         if not params['gateway.metadata.id']:
             # Root.
-            params['path'] = params['authorization']['path']
+            params['server.path'] = params['authorization']['path']
             return dispatch_func(environ, params)
         params['gateway.metadata.path'] = base64.urlsafe_b64decode(params['gateway.metadata.id'].encode('utf-8')).decode('utf-8')
 
@@ -79,8 +79,8 @@ def load_path(dispatch_func):
         if platform.system() == "Windows":
             params['authorization']['path'] = _get_win_long_path(params['authorization']['path'])
 
-        params['path'] = os.path.join(params['authorization']['path'], params['gateway.metadata.path'])
-        if not os.path.exists(params['path']):
+        params['server.path'] = os.path.join(params['authorization']['path'], params['gateway.metadata.path'])
+        if not os.path.exists(params['server.path']):
             return {'code': '404', 'message': 'Not Found'}
 
         return dispatch_func(environ, params)
@@ -93,7 +93,7 @@ def check_read_permission(dispatch_func):
         assert params.get('authorization')
 
         # check path permission
-        if not params['path'].startswith(params['authorization']['path']):
+        if not params['server.path'].startswith(params['authorization']['path']):
             return {'code': '403', 'message': 'Unauthorized'}
 
         # dispatch
@@ -107,7 +107,7 @@ def check_write_permission(dispatch_func):
         assert params.get('authorization')
 
         # check path permission
-        if not params['path'].startswith(params['authorization']['path']):
+        if not params['server.path'].startswith(params['authorization']['path']):
             return {'code': '403', 'message': 'Unauthorized'}
 
         # check write permission

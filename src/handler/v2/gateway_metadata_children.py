@@ -67,9 +67,9 @@ def _get_gateway_metadata(environ, params):
 
 def _list_folder(environ, params):
     listing = []
-    for filename in os.listdir(params['path']):
+    for filename in os.listdir(params['server.path']):
         # map item metadata
-        remapped_node = util.handler.get_metadata(params['authorization']['path'], params['path'] + os.sep + filename)
+        remapped_node = util.handler.get_metadata(params['authorization']['path'], params['server.path'] + os.sep + filename)
         listing.append(remapped_node)
     return {
         'code': '200',

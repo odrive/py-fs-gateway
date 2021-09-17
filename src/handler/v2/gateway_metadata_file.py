@@ -117,10 +117,10 @@ def _post_gateway_metadata(environ, params):
     os.utime(temp_path, (time.time(), mod_time))
 
     # Move temp into position.
-    shutil.move(temp_path, params['path'] + os.sep + params['gateway.metadata.name'])
+    shutil.move(temp_path, params['server.path'] + os.sep + params['gateway.metadata.name'])
 
     # Success.
-    metadata = util.handler.get_metadata(params['authorization']['path'], params['path'] + os.sep + params['gateway.metadata.name'])
+    metadata = util.handler.get_metadata(params['authorization']['path'], params['server.path'] + os.sep + params['gateway.metadata.name'])
     return {
         'code': '200',
         'message': 'OK',
@@ -188,10 +188,10 @@ def _put_gateway_metadata(environ, params):
     os.utime(temp_path, (time.time(), mod_time))
 
     # Replace file with temp.
-    shutil.move(temp_path, params['path'])
+    shutil.move(temp_path, params['server.path'])
 
     # Success.
-    metadata = util.handler.get_metadata(params['authorization']['path'], params['path'])
+    metadata = util.handler.get_metadata(params['authorization']['path'], params['server.path'])
     return {
         'code': '200',
         'message': 'OK',

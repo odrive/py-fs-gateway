@@ -55,7 +55,7 @@ def _get_gateway_metadata(environ, params):
 
 def _get_content_custom_preview(start_response, params, height):
 
-    ext = params['path'].split('.')[-1]
+    ext = params['server.path'].split('.')[-1]
     if not ext or ext.lower() not in ('jpg', 'png', 'jpeg', 'gif', 'tif'):
         return {'code': '403', 'message': 'Unsupported'}
 
@@ -65,8 +65,8 @@ def _get_content_custom_preview(start_response, params, height):
     # todo skip if original is small enough
 
     # generate if not in cache or cache is old
-    if not os.path.exists(cache_path) or os.path.getmtime(cache_path) < os.path.getmtime(params['path']):
-        im = PIL.Image.open(params['path'])
+    if not os.path.exists(cache_path) or os.path.getmtime(cache_path) < os.path.getmtime(params['server.path']):
+        im = PIL.Image.open(params['server.path'])
 
         try:
             im.thumbnail((height, height), PIL.Image.ANTIALIAS)
