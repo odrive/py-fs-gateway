@@ -78,8 +78,8 @@ def _create_folder(environ, params):
 
     # Load body.
     body = json.load(environ['wsgi.input'])
-    params['gateway.metadata.name'] = body.get('metadata.content.name')
-    params['gateway.metadata.modified'] = body.get('metadata.content.modified')
+    params['gateway.metadata.name'] = body.get('gateway.metadata.name')
+    params['gateway.metadata.modified'] = body.get('gateway.metadata.modified')
 
     #
     # Validate.
