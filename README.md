@@ -35,10 +35,9 @@ setup/setup_mac.sh
   "wsgi.log.enable": true,
   "wsgi.log.path": "server.log",
 
-  "handler.v2.metadata.temp.dir": "temp",
-  "handler.v2.metadata_file.temp.dir": "temp",
-  "handler.v2.file_thumbnail.temp.dir": "temp",
-  "handler.v2.auth.acl.path": "acl.json"
+  "handler.v2.gateway_metadata_file.temp.dir": "temp",
+  "handler.v2.gateway_file_thumbnail.temp.dir": "temp",
+  "handler.v2.gateway_auth.acl.path": "acl.json"
 }
 ```
 
@@ -51,13 +50,12 @@ Property | Description
 `controller.datastore.path` | Where to store session files.
 `util.handler.usage.interval.seconds` | Sampling period for limiting usage.
 `util.handler.usage.count.max` | Maximum requests within usage interface. Requests beyond the max return 429 status code.
-`util.handler.auth.expiration` | Session duration in minutes. Requires client to get new access.token with refresh.token.
+`util.handler.auth.duration.seconds` | Session duration in seconds. Requires client to get new access.token with refresh.token.
 `wsgi.log.enable` | Set `true` to log every server request.
 `wsgi.log.path` | Relative or absolute path to server log.
-`handler.v2.metadata.temp.dir`| Temp staging directory for uploads.
-`handler.v2.metadata_file.temp.dir`| Temp staging directory for uploads.
-`handler.v2.file_thumbnail.temp.dir`| Temp caching directory for thumbnails.
-`handler.v2.auth.acl.path` | Where to get the access control file.
+`handler.v2.gateway_metadata_file.temp.dir`| Temp staging directory for uploads.
+`handler.v2.gateway_file_thumbnail.temp.dir`| Temp caching directory for thumbnails.
+`handler.v2.gateway_auth.acl.path` | Where to get the access control file.
 
 # Access Control
 File Server Gateway requires a valid *access key* to `POST /v2/auth` and receive access tokens. 
@@ -157,7 +155,7 @@ All gateways implement the same API except for authorization. Use the File Serve
 
 ### Signing into File Server Gateway
 ```
-POST /v2/auth
+POST /v2/gateway_auth
 ```
 **Request Body JSON**
 
@@ -169,9 +167,9 @@ Property | Description
 
 Property | Description
 ---------|------------
-`access.token` | Required AUTHORIZATION header for subsequent API requests.
-`refresh.token` | Required to get new access.token after session expires.
-`root.content.id` | `''` Session root folder ID is an empty string.
+`gateway.auth.access.token` | Required AUTHORIZATION header for subsequent API requests.
+`gateway.auth.refresh.token` | Required to get new access.token after session expires.
+`gateway.auth.metadata.id` | `''` Session root folder ID is an empty string.
 
 **Response Status**
 
