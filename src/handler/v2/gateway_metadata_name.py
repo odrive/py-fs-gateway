@@ -39,14 +39,14 @@ def handle(environ):
 
 
 # Rename file or folder.
-# PATCH /v2/gateway_metadata_name/<gateway.metadata.id>
+# PUT /v2/gateway_metadata_name/<gateway.metadata.id>
 @util.handler.handle_unexpected_exception
 @util.handler.limit_usage
 @util.handler.check_authorization
 @util.handler.load_path
 @util.handler.check_write_permission
 @util.handler.handle_file_system_io_error
-def _patch_gateway_metadata(environ, params):
+def _put_gateway_metadata(environ, params):
     assert params.get('gateway.metadata.id')
 
     #
@@ -88,10 +88,11 @@ def _patch_gateway_metadata(environ, params):
     shutil.move(params['server.path'], new_path)
 
     # Success.
-    metadata = util.handler.get_metadata(params['authorization']['gateway.auth.path'], new_path)
     return {
         'code': '200',
         'message': 'OK',
         'contentType': 'application/json',
-        'content': json.dumps(metadata)
+        'content': json.dumps({
+            'gateway.metadata.name': params['new.gateway.metadata.name']
+        })
     }
