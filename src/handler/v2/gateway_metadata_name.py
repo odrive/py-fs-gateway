@@ -12,8 +12,8 @@ def handle(environ):
 
     # PATH_INFO
     params = {
-        # URI /v2/metadata_content_name/<content.id>
-        'metadata.content.id': environ['PATH_INFO'][26:] if len(environ['PATH_INFO']) > 26 else None,
+        # URI /v2/gateway_metadata_name/<gateway.metadata.id>
+        'gateway.metadata.id': environ['PATH_INFO'][26:] if len(environ['PATH_INFO']) > 26 else None,
     }
 
     #
@@ -26,7 +26,7 @@ def handle(environ):
 
     delegate_func = '_{}{}'.format(
         environ['REQUEST_METHOD'].lower(),
-        '_metadata_content_name' if params['metadata.content.id'] else ''
+        '_gateway_metadata' if params['gateway.metadata.id'] else ''
     )
     if delegate_func in globals():
         return eval(delegate_func)(environ, params)
@@ -39,41 +39,41 @@ def handle(environ):
 
 
 # Rename file or folder.
-# PATCH /v2/metadata_content_name/<content.id>
+# PUT /v2/gateway_metadata_name/<gateway.metadata.id>
 @util.handler.handle_unexpected_exception
 @util.handler.limit_usage
 @util.handler.check_authorization
 @util.handler.load_path
 @util.handler.check_write_permission
 @util.handler.handle_file_system_io_error
-def _patch_metadata_content_name(environ, params):
-    assert params.get('metadata.content.id')
+def _put_gateway_metadata(environ, params):
+    assert params.get('gateway.metadata.id')
 
     #
     # Load.
     #
 
     params.update({
-        'new.metadata.content.name': None,
-        'old.metadata.content.name': None,
+        'new.gateway.metadata.name': None,
+        'old.gateway.metadata.name': None,
     })
 
     # Load body.
     body = json.load(environ['wsgi.input'])
-    params['new.metadata.content.name'] = body.get('new.metadata.content.name')
-    params['old.metadata.content.name'] = body.get('old.metadata.content.name')
+    params['new.gateway.metadata.name'] = body.get('new.gateway.metadata.name')
+    params['old.gateway.metadata.name'] = body.get('old.gateway.metadata.name')
 
     #
     # Validate.
     #
 
     # Validate name.
-    if params['new.metadata.content.name'] is None:
+    if params['new.gateway.metadata.name'] is None:
         return {
             'code': '400',
-            'message': 'Missing new.metadata.content.name'
+            'message': 'Missing new.gateway.metadata.name'
         }
-    if params['old.metadata.content.name'] and params['old.metadata.content.name'] != os.path.basename(params['path']):
+    if params['old.gateway.metadata.name'] and params['old.gateway.metadata.name'] != os.path.basename(params['server.path']):
         return {
             'code': '400',
             'message': 'Not expected name.'
@@ -84,14 +84,15 @@ def _patch_metadata_content_name(environ, params):
     #
 
     # Rename.
-    new_path = os.path.dirname(params['path']) + os.sep + params['new.metadata.content.name']
-    shutil.move(params['path'], new_path)
+    new_path = os.path.dirname(params['server.path']) + os.sep + params['new.gateway.metadata.name']
+    shutil.move(params['server.path'], new_path)
 
     # Success.
-    metadata = util.handler.get_metadata(params['authorization']['path'], new_path)
     return {
         'code': '200',
         'message': 'OK',
         'contentType': 'application/json',
-        'content': json.dumps(metadata)
+        'content': json.dumps({
+            'gateway.metadata.name': params['new.gateway.metadata.name']
+        })
     }

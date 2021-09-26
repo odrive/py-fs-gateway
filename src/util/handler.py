@@ -44,15 +44,15 @@ def check_authorization(dispatch_func):
     def wrapper(environ, params):
 
         # Get access token
-        params['access.token'] = _get_access_token(environ)
-        if params['access.token'] is None:
+        params['gateway.access.token'] = _get_access_token(environ)
+        if params['gateway.access.token'] is None:
             return {
                 'code': '401', 
                 'message': 'Unauthorized'
             }
 
         # Get unexpired authorization for access token.
-        params['authorization'] = controller.datastore.get(params['access.token'], 'access', _config['auth.duration.seconds'])
+        params['authorization'] = controller.datastore.get(params['gateway.access.token'], 'access', _config['auth.duration.seconds'])
         if params['authorization'] is None:
             return {
                 'code': '401', 
@@ -68,19 +68,21 @@ def check_authorization(dispatch_func):
 def load_path(dispatch_func):
     def wrapper(environ, params):
 
-        # Convert content.id to absolute path.
-        if not params['metadata.content.id']:
+        # Convert gateway.metadata.id to absolute path.
+        if not params['gateway.metadata.id']:
             # Root.
-            params['path'] = params['authorization']['path']
+            params['server.path'] = params['authorization']['gateway.auth.path']
             return dispatch_func(environ, params)
-        params['metadata.content.path'] = base64.urlsafe_b64decode(params['metadata.content.id'].encode('utf-8')).decode('utf-8')
 
         # If Windows, convert to a "long" path to deal with the path length restriction
         if platform.system() == "Windows":
-            params['authorization']['path'] = _get_win_long_path(params['authorization']['path'])
+            params['authorization']['gateway.auth.path'] = _get_win_long_path(params['authorization']['gateway.auth.path'])
 
-        params['path'] = os.path.join(params['authorization']['path'], params['metadata.content.path'])
-        if not os.path.exists(params['path']):
+        params['server.path'] = os.path.join(
+            params['authorization']['gateway.auth.path'],
+            base64.urlsafe_b64decode(params['gateway.metadata.id'].encode('utf-8')).decode('utf-8')
+        )
+        if not os.path.exists(params['server.path']):
             return {'code': '404', 'message': 'Not Found'}
 
         return dispatch_func(environ, params)
@@ -93,7 +95,7 @@ def check_read_permission(dispatch_func):
         assert params.get('authorization')
 
         # check path permission
-        if not params['path'].startswith(params['authorization']['path']):
+        if not params['server.path'].startswith(params['authorization']['gateway.auth.path']):
             return {'code': '403', 'message': 'Unauthorized'}
 
         # dispatch
@@ -107,11 +109,11 @@ def check_write_permission(dispatch_func):
         assert params.get('authorization')
 
         # check path permission
-        if not params['path'].startswith(params['authorization']['path']):
+        if not params['server.path'].startswith(params['authorization']['gateway.auth.path']):
             return {'code': '403', 'message': 'Unauthorized'}
 
         # check write permission
-        if not params['authorization'].get('writable'):
+        if not params['authorization'].get('gateway.auth.writable'):
             return {'code': '403', 'message': 'Read Only'}
 
         # dispatch
@@ -170,21 +172,21 @@ def get_metadata(access_root, path):
     # remap metadata
     if os.path.isdir(path):
         remapped_node = {
-            'metadata.content.id': content_id,
-            'metadata.content.parent.id': parent_content_id,
-            'metadata.content.name': os.path.basename(path),
-            'metadata.content.type': 'folder',
-            'metadata.content.modified': int(os.path.getmtime(path) * 1000),  # milliseconds since unix epoch
+            'gateway.metadata.id': content_id,
+            'gateway.metadata.parent.id': parent_content_id,
+            'gateway.metadata.name': os.path.basename(path),
+            'gateway.metadata.type': 'folder',
+            'gateway.metadata.modified': int(os.path.getmtime(path) * 1000),  # milliseconds since unix epoch
         }
     else:
         remapped_node = {
-            'metadata.content.id': content_id,
-            'metadata.content.parent.id': parent_content_id,
-            'metadata.content.name': os.path.basename(path),
-            'metadata.content.type': 'file',
-            'metadata.content.modified': int(os.path.getmtime(path) * 1000),  # milliseconds since unix epoch
-            'metadata.file.size': os.path.getsize(path),
-            'metadata.file.hash': f"{os.path.getsize(path)}{os.path.getmtime(path)}"
+            'gateway.metadata.id': content_id,
+            'gateway.metadata.parent.id': parent_content_id,
+            'gateway.metadata.name': os.path.basename(path),
+            'gateway.metadata.type': 'file',
+            'gateway.metadata.modified': int(os.path.getmtime(path) * 1000),  # milliseconds since unix epoch
+            'gateway.metadata.file.size': os.path.getsize(path),
+            'gateway.metadata.file.hash': f"{os.path.getsize(path)}{os.path.getmtime(path)}"
         }
 
     return remapped_node

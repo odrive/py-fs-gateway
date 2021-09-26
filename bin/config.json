@@ -8,9 +8,8 @@
 
   "controller.datastore.path": "datastore",
 
-  "handler.v2.metadata_file.temp.dir": "temp",
-  "handler.v2.metadata.temp.dir": "temp",
-  "handler.v2.file_thumbnail.temp.dir": "temp",
+  "handler.v2.gateway_metadata_file.temp.dir": "temp",
+  "handler.v2.gateway_file_thumbnail.temp.dir": "temp",
 
-  "handler.v2.auth.acl.path": "acl.json"
+  "handler.v2.gateway_auth.acl.path": "acl.json"
 }
