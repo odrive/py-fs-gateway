@@ -84,12 +84,14 @@ def _put_gateway_metadata(environ, params):
     shutil.move(params['server.path'], new_path)
 
     # Success.
+    metadata = util.handler.get_metadata(params['authorization']['gateway.auth.path'], new_path)
     return {
         'code': '200',
         'message': 'OK',
         'contentType': 'application/json',
         'content': json.dumps({
-            'gateway.metadata.parent.id': params['new.gateway.metadata.parent.id'],
+            'gateway.metadata.id': metadata['gateway.metadata.id'],
+            'gateway.metadata.parent.id': metadata['gateway.metadata.parent.id'],
         })
     }
 
