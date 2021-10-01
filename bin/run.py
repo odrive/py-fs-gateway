@@ -1,7 +1,7 @@
 import os
 import json
 import cherrypy
-import dispatcher
+from fs_gateway import dispatcher
 
 #
 # Configure server.
@@ -14,19 +14,19 @@ with open(os.path.join(os.getcwd(), 'config.json'), 'r') as data_file:
     config = json.load(data_file)
 
 # Convert relative paths to absolute paths.
-config['wsgi.log.path'] = os.path.abspath(os.path.expanduser(config['wsgi.log.path']))
-config['controller.datastore.path'] = os.path.abspath(os.path.expanduser(config['controller.datastore.path']))
-config['handler.v2.gateway_metadata_file.temp.dir'] = os.path.abspath(os.path.expanduser(config['handler.v2.gateway_metadata_file.temp.dir']))
-config['handler.v2.gateway_file_thumbnail.temp.dir'] = os.path.abspath(os.path.expanduser(config['handler.v2.gateway_file_thumbnail.temp.dir']))
-config['handler.v2.gateway_auth.acl.path'] = os.path.abspath(os.path.expanduser(config['handler.v2.gateway_auth.acl.path']))
+config['fs_gateway.wsgi.log.path'] = os.path.abspath(os.path.expanduser(config['fs_gateway.wsgi.log.path']))
+config['fs_gateway.controller.datastore.path'] = os.path.abspath(os.path.expanduser(config['fs_gateway.controller.datastore.path']))
+config['fs_gateway.handler.v2.gateway_metadata_file.temp.dir'] = os.path.abspath(os.path.expanduser(config['fs_gateway.handler.v2.gateway_metadata_file.temp.dir']))
+config['fs_gateway.handler.v2.gateway_file_thumbnail.temp.dir'] = os.path.abspath(os.path.expanduser(config['fs_gateway.handler.v2.gateway_file_thumbnail.temp.dir']))
+config['fs_gateway.handler.v2.gateway_auth.acl.path'] = os.path.abspath(os.path.expanduser(config['fs_gateway.handler.v2.gateway_auth.acl.path']))
 
 # Ensure folder ready.
-if not os.path.exists(config['controller.datastore.path']):
-    os.makedirs(config['controller.datastore.path'])
-if not os.path.exists(config['handler.v2.gateway_file_thumbnail.temp.dir']):
-    os.makedirs(config['handler.v2.gateway_file_thumbnail.temp.dir'])
-if not os.path.exists(config['handler.v2.gateway_metadata_file.temp.dir']):
-    os.makedirs(config['handler.v2.gateway_metadata_file.temp.dir'])
+if not os.path.exists(config['fs_gateway.controller.datastore.path']):
+    os.makedirs(config['fs_gateway.controller.datastore.path'])
+if not os.path.exists(config['fs_gateway.handler.v2.gateway_file_thumbnail.temp.dir']):
+    os.makedirs(config['fs_gateway.handler.v2.gateway_file_thumbnail.temp.dir'])
+if not os.path.exists(config['fs_gateway.handler.v2.gateway_metadata_file.temp.dir']):
+    os.makedirs(config['fs_gateway.handler.v2.gateway_metadata_file.temp.dir'])
 
 
 # Load config.

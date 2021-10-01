@@ -75,7 +75,7 @@ def _get_resource_module(version, resource):
     # load from future if specified
     if version == 'future':
         try:
-            handler_module = importlib.import_module('handler.future.' + resource)
+            handler_module = importlib.import_module('fs_gateway.handler.future.' + resource)
         except ImportError:
             # downgrade version to next lookup
             version = 'downgrade'
@@ -83,7 +83,7 @@ def _get_resource_module(version, resource):
     # load from v2 if specified or downgrading
     if version in ['v2', 'downgrade']:
         try:
-            handler_module = importlib.import_module('handler.v2.' + resource)
+            handler_module = importlib.import_module('fs_gateway.handler.v2.' + resource)
         except ImportError:
             pass
 

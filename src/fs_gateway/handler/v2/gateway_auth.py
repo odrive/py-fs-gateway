@@ -2,8 +2,8 @@ import os
 import json
 import random
 import string
-import util.handler
-import controller.datastore
+import fs_gateway.util.handler
+import fs_gateway.controller.datastore
 
 
 def handle(environ):
@@ -41,9 +41,9 @@ def handle(environ):
 
 # Sign in.
 # POST /v2/gateway_auth
-@util.handler.handle_unexpected_exception
-@util.handler.limit_usage
-@util.handler.handle_requests_exception
+@fs_gateway.util.handler.handle_unexpected_exception
+@fs_gateway.util.handler.limit_usage
+@fs_gateway.util.handler.handle_requests_exception
 def _post(environ, params):
     #
     # Params.
@@ -121,14 +121,14 @@ def _post(environ, params):
 
 # Sign out.
 # DELETE /v2/gateway_auth/<gateway.auth.access.token>
-@util.handler.handle_unexpected_exception
-@util.handler.limit_usage
-@util.handler.handle_requests_exception
+@fs_gateway.util.handler.handle_unexpected_exception
+@fs_gateway.util.handler.limit_usage
+@fs_gateway.util.handler.handle_requests_exception
 def _delete_gateway_auth(environ, params):
     assert params.get('gateway.auth.access.token')
 
     # Check access.
-    access = controller.datastore.get(params['gateway.auth.access.token'], 'access')
+    access = fs_gateway.controller.datastore.get(params['gateway.auth.access.token'], 'access')
     if access is None:
         # Already gone.
         return {
@@ -137,8 +137,8 @@ def _delete_gateway_auth(environ, params):
         }
 
     # Delete access.
-    controller.datastore.delete(access['gateway.auth.access.token'], 'access')
-    controller.datastore.delete(access['gateway.auth.refresh.token'], 'refresh')
+    fs_gateway.controller.datastore.delete(access['gateway.auth.access.token'], 'access')
+    fs_gateway.controller.datastore.delete(access['gateway.auth.refresh.token'], 'refresh')
     return {
         'code': '200',
         'message': 'OK'
@@ -164,7 +164,7 @@ def _authorize(access_key):
 
     # Persist session.
     assert _acl.get(f"{access_key}.path")
-    controller.datastore.put(
+    fs_gateway.controller.datastore.put(
         access_token,
         {
             'gateway.auth.path': _acl.get(f"{access_key}.path"),
@@ -174,7 +174,7 @@ def _authorize(access_key):
         },
         'access'
     )
-    controller.datastore.put(
+    fs_gateway.controller.datastore.put(
         refresh_token,
         {
             'gateway.auth.path': _acl.get(f"{access_key}.path"),
@@ -192,7 +192,7 @@ def _authorize(access_key):
 
 def _refresh(refresh_token):
     # Load authorization to refresh.
-    refresh_auth = controller.datastore.get(refresh_token, 'refresh')
+    refresh_auth = fs_gateway.controller.datastore.get(refresh_token, 'refresh')
     if refresh_auth is None:
         # Not allowed.
         return None
@@ -203,7 +203,7 @@ def _refresh(refresh_token):
             string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(32))
 
     # Persist session.
-    controller.datastore.put(
+    fs_gateway.controller.datastore.put(
         access_token,
         {
             'gateway.auth.path': refresh_auth.get('gateway.auth.path'),

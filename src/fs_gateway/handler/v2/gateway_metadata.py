@@ -1,9 +1,7 @@
-import tempfile
-import time
 import os
 import shutil
 import json
-import util.handler
+import fs_gateway.util.handler
 
 
 def handle(environ):
@@ -41,9 +39,9 @@ def handle(environ):
 
 # Delete root folder.
 # DELETE /v2/gateway_metadata
-@util.handler.handle_unexpected_exception
-@util.handler.limit_usage
-@util.handler.check_authorization
+@fs_gateway.util.handler.handle_unexpected_exception
+@fs_gateway.util.handler.limit_usage
+@fs_gateway.util.handler.check_authorization
 def _delete(environ, params):
     # Not allowed.
     return {
@@ -54,12 +52,12 @@ def _delete(environ, params):
 
 # Delete file or folder.
 # DELETE /v2/gateway_metadata/<gateway.metadata.id>
-@util.handler.handle_unexpected_exception
-@util.handler.limit_usage
-@util.handler.check_authorization
-@util.handler.load_path
-@util.handler.check_write_permission
-@util.handler.handle_file_system_io_error
+@fs_gateway.util.handler.handle_unexpected_exception
+@fs_gateway.util.handler.limit_usage
+@fs_gateway.util.handler.check_authorization
+@fs_gateway.util.handler.load_path
+@fs_gateway.util.handler.check_write_permission
+@fs_gateway.util.handler.handle_file_system_io_error
 def _delete_gateway_metadata(environ, params):
     assert params.get('gateway.metadata.id')
 
@@ -95,11 +93,11 @@ def _delete_gateway_metadata(environ, params):
 
 # Get metadata for root folder.
 # GET /v2/gateway_metadata
-@util.handler.handle_unexpected_exception
-@util.handler.limit_usage
-@util.handler.check_authorization
-@util.handler.load_path
-@util.handler.check_read_permission
+@fs_gateway.util.handler.handle_unexpected_exception
+@fs_gateway.util.handler.limit_usage
+@fs_gateway.util.handler.check_authorization
+@fs_gateway.util.handler.load_path
+@fs_gateway.util.handler.check_read_permission
 def _get(environ, params):
     # Get root folder metadata.
     return {
@@ -117,16 +115,16 @@ def _get(environ, params):
 
 # Get file or folder metadata.
 # GET /v2/gateway_metadata/<gateway.metadata.id>
-@util.handler.handle_unexpected_exception
-@util.handler.limit_usage
-@util.handler.check_authorization
-@util.handler.load_path
-@util.handler.check_read_permission
-@util.handler.handle_file_system_io_error
+@fs_gateway.util.handler.handle_unexpected_exception
+@fs_gateway.util.handler.limit_usage
+@fs_gateway.util.handler.check_authorization
+@fs_gateway.util.handler.load_path
+@fs_gateway.util.handler.check_read_permission
+@fs_gateway.util.handler.handle_file_system_io_error
 def _get_gateway_metadata(environ, params):
     assert params.get('gateway.metadata.id')
 
-    metadata = util.handler.get_metadata(params['authorization']['gateway.auth.path'], params['server.path'])
+    metadata = fs_gateway.util.handler.get_metadata(params['authorization']['gateway.auth.path'], params['server.path'])
     return {
         'code': '200',
         'message': 'OK',
