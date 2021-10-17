@@ -1,6 +1,6 @@
 import os
 import json
-import util.handler
+import fs_gateway.util.handler
 
 
 def handle(environ):
@@ -39,24 +39,24 @@ def handle(environ):
 
 # List root.
 # GET /v2/gateway_metadata_children
-@util.handler.handle_unexpected_exception
-@util.handler.limit_usage
-@util.handler.check_authorization
-@util.handler.load_path
-@util.handler.check_read_permission
-@util.handler.handle_file_system_io_error
+@fs_gateway.util.handler.handle_unexpected_exception
+@fs_gateway.util.handler.limit_usage
+@fs_gateway.util.handler.check_authorization
+@fs_gateway.util.handler.load_path
+@fs_gateway.util.handler.check_read_permission
+@fs_gateway.util.handler.handle_file_system_io_error
 def _get(environ, params):
     return _list_folder(environ, params)
 
 
 # List folder.
 # GET /v2/gateway_metadata_children/<gateway.metadata.id>
-@util.handler.handle_unexpected_exception
-@util.handler.limit_usage
-@util.handler.check_authorization
-@util.handler.load_path
-@util.handler.check_read_permission
-@util.handler.handle_file_system_io_error
+@fs_gateway.util.handler.handle_unexpected_exception
+@fs_gateway.util.handler.limit_usage
+@fs_gateway.util.handler.check_authorization
+@fs_gateway.util.handler.load_path
+@fs_gateway.util.handler.check_read_permission
+@fs_gateway.util.handler.handle_file_system_io_error
 def _get_gateway_metadata(environ, params):
     return _list_folder(environ, params)
 
@@ -69,7 +69,7 @@ def _list_folder(environ, params):
     listing = []
     for filename in os.listdir(params['server.path']):
         # map item metadata
-        remapped_node = util.handler.get_metadata(params['authorization']['gateway.auth.path'], params['server.path'] + os.sep + filename)
+        remapped_node = fs_gateway.util.handler.get_metadata(params['authorization']['gateway.auth.path'], params['server.path'] + os.sep + filename)
         listing.append(remapped_node)
     return {
         'code': '200',

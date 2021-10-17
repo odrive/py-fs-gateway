@@ -6,7 +6,7 @@ import urllib
 import urllib.parse
 import requests
 import traceback
-import controller.datastore
+import fs_gateway.controller.datastore
 
 
 def handle_requests_exception(dispatch_func):
@@ -52,7 +52,7 @@ def check_authorization(dispatch_func):
             }
 
         # Get unexpired authorization for access token.
-        params['authorization'] = controller.datastore.get(params['gateway.access.token'], 'access', _config['auth.duration.seconds'])
+        params['authorization'] = fs_gateway.controller.datastore.get(params['gateway.access.token'], 'access', _config['auth.duration.seconds'])
         if params['authorization'] is None:
             return {
                 'code': '401', 

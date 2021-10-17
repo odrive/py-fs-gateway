@@ -1,5 +1,5 @@
 import os
-import util.handler
+import fs_gateway.util.handler
 
 
 def handle(environ):
@@ -10,7 +10,7 @@ def handle(environ):
 
     params = {
         # From PATH_INFO
-        # /v1/gateway_file/<gateway.metadata.id>
+        # /v2/gateway_file/<gateway.metadata.id>
         'gateway.metadata.id': environ['PATH_INFO'][17:] if len(environ['PATH_INFO']) > 17 else None,
     }
 
@@ -38,12 +38,12 @@ def handle(environ):
 
 # Download file.
 # GET /v2/gateway_file/<gateway.metadata.id>
-@util.handler.handle_unexpected_exception
-@util.handler.limit_usage
-@util.handler.check_authorization
-@util.handler.load_path
-@util.handler.check_read_permission
-@util.handler.handle_file_system_io_error
+@fs_gateway.util.handler.handle_unexpected_exception
+@fs_gateway.util.handler.limit_usage
+@fs_gateway.util.handler.check_authorization
+@fs_gateway.util.handler.load_path
+@fs_gateway.util.handler.check_read_permission
+@fs_gateway.util.handler.handle_file_system_io_error
 def _get_gateway_metadata(environ, params):
     assert params.get('gateway.metadata.id')
 

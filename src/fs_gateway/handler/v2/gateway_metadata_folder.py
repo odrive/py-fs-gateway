@@ -1,6 +1,6 @@
 import os
 import json
-import util.handler
+import fs_gateway.util.handler
 
 
 def handle(environ):
@@ -39,24 +39,24 @@ def handle(environ):
 
 # Create root sub folder.
 # POST /v2/gateway_metadata_folder
-@util.handler.handle_unexpected_exception
-@util.handler.limit_usage
-@util.handler.check_authorization
-@util.handler.load_path
-@util.handler.check_write_permission
-@util.handler.handle_file_system_io_error
+@fs_gateway.util.handler.handle_unexpected_exception
+@fs_gateway.util.handler.limit_usage
+@fs_gateway.util.handler.check_authorization
+@fs_gateway.util.handler.load_path
+@fs_gateway.util.handler.check_write_permission
+@fs_gateway.util.handler.handle_file_system_io_error
 def _post(environ, params):
     return _create_folder(environ, params)
 
 
 # Create sub folder.
 # POST /v2/gateway_metadata_folder/<gateway.metadata.id>
-@util.handler.handle_unexpected_exception
-@util.handler.limit_usage
-@util.handler.check_authorization
-@util.handler.load_path
-@util.handler.check_write_permission
-@util.handler.handle_file_system_io_error
+@fs_gateway.util.handler.handle_unexpected_exception
+@fs_gateway.util.handler.limit_usage
+@fs_gateway.util.handler.check_authorization
+@fs_gateway.util.handler.load_path
+@fs_gateway.util.handler.check_write_permission
+@fs_gateway.util.handler.handle_file_system_io_error
 def _post_gateway_metadata(environ, params):
     return _create_folder(environ, params)
 
@@ -100,7 +100,7 @@ def _create_folder(environ, params):
     # todo - preserve the folder modified
 
     # send new content
-    metadata = util.handler.get_metadata(params['authorization']['gateway.auth.path'], new_folder_path)
+    metadata = fs_gateway.util.handler.get_metadata(params['authorization']['gateway.auth.path'], new_folder_path)
     return {
         'code': '200',
         'message': 'OK',

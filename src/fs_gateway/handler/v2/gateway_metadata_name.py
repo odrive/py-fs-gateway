@@ -1,7 +1,7 @@
 import os
 import shutil
 import json
-import util.handler
+import fs_gateway.util.handler
 
 
 def handle(environ):
@@ -40,12 +40,12 @@ def handle(environ):
 
 # Rename file or folder.
 # PUT /v2/gateway_metadata_name/<gateway.metadata.id>
-@util.handler.handle_unexpected_exception
-@util.handler.limit_usage
-@util.handler.check_authorization
-@util.handler.load_path
-@util.handler.check_write_permission
-@util.handler.handle_file_system_io_error
+@fs_gateway.util.handler.handle_unexpected_exception
+@fs_gateway.util.handler.limit_usage
+@fs_gateway.util.handler.check_authorization
+@fs_gateway.util.handler.load_path
+@fs_gateway.util.handler.check_write_permission
+@fs_gateway.util.handler.handle_file_system_io_error
 def _put_gateway_metadata(environ, params):
     assert params.get('gateway.metadata.id')
 
@@ -88,7 +88,7 @@ def _put_gateway_metadata(environ, params):
     shutil.move(params['server.path'], new_path)
 
     # Success.
-    metadata = util.handler.get_metadata(params['authorization']['gateway.auth.path'], new_path)
+    metadata = fs_gateway.util.handler.get_metadata(params['authorization']['gateway.auth.path'], new_path)
     return {
         'code': '200',
         'message': 'OK',
