@@ -52,7 +52,6 @@ def _post(environ, params):
     params.update({
         # From body.
         'key': None,
-        'gateway.auth.refresh.token': None,
     })
 
     # Load body.
@@ -63,10 +62,10 @@ def _post(environ, params):
     #
 
     # Required params.
-    if not (params['key'] or params['gateway.auth.refresh.token']):
+    if params['key'] is None:
         return {
             'code': '400',
-            'message': 'Missing key and refresh.token'
+            'message': 'Missing key '
         }
 
     #
@@ -74,49 +73,25 @@ def _post(environ, params):
     #
 
     # Authorize key.
-    if params['key']:
-        authorization = _authorize(params['key'])
-        if authorization is None:
-            # Not allowed.
-            return {
-                'code': '403',
-                'message': 'Unauthorized'
-            }
-
-        # Authorized.
+    authorization = _authorize(params['key'])
+    if authorization is None:
+        # Not allowed.
         return {
-            'code': '200',
-            'message': 'OK',
-            'contentType': 'application/json',
-            'content': json.dumps({
-                'gateway.auth.access.token': authorization.get('gateway.auth.access.token'),
-                'gateway.auth.refresh.token': authorization.get('gateway.auth.refresh.token'),
-                'gateway.auth.metadata.id': authorization.get('gateway.auth.metadata.id')
-            }),
+            'code': '403',
+            'message': 'Unauthorized'
         }
 
-    # Refresh access.token.
-    if params['gateway.auth.refresh.token']:
-        authorization = _refresh(params['gateway.auth.refresh.token'])
-        if authorization is None:
-            return {
-                'code': '403',
-                'message': 'Unauthorized'
-            }
-
-        return {
-            'code': '200',
-            'message': 'OK',
-            'contentType': 'application/json',
-            'content': json.dumps({
-                'gateway.auth.access.token': authorization.get('gateway.auth.access.token'),
-                'gateway.auth.refresh.token': authorization.get('gateway.auth.refresh.token'),
-                'gateway.auth.metadata.id': authorization.get('gateway.auth.metadata.id')
-            }),
-        }
-
-    # handle unexpected
-    assert False
+    # Authorized.
+    return {
+        'code': '200',
+        'message': 'OK',
+        'contentType': 'application/json',
+        'content': json.dumps({
+            'gateway.auth.access.token': authorization.get('gateway.auth.access.token'),
+            'gateway.auth.refresh.token': authorization.get('gateway.auth.refresh.token'),
+            'gateway.auth.metadata.id': authorization.get('gateway.auth.metadata.id')
+        }),
+    }
 
 
 # Sign out.
@@ -181,37 +156,6 @@ def _authorize(access_key):
             'gateway.auth.writable': _acl.get(f"{access_key}.writable")  if _acl.get(f"{access_key}.writable") is True else False,
         },
         'refresh'
-    )
-
-    return {
-        'gateway.auth.access.token': access_token,
-        'gateway.auth.refresh.token': refresh_token,
-        'gateway.auth.metadata.id': ''
-    }
-
-
-def _refresh(refresh_token):
-    # Load authorization to refresh.
-    refresh_auth = fs_gateway.controller.datastore.get(refresh_token, 'refresh')
-    if refresh_auth is None:
-        # Not allowed.
-        return None
-
-    # Create session.
-    access_token = ''.join(
-        random.SystemRandom().choice(
-            string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(32))
-
-    # Persist session.
-    fs_gateway.controller.datastore.put(
-        access_token,
-        {
-            'gateway.auth.path': refresh_auth.get('gateway.auth.path'),
-            'gateway.auth.writable': refresh_auth.get('gateway.auth.writable'),
-            'gateway.auth.access.token': access_token,
-            'gateway.auth.refresh.token': refresh_token,
-        },
-        'access'
     )
 
     return {
