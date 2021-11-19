@@ -29,7 +29,6 @@ def handle(environ):
 # POST /v2/gateway_auth_access
 @fs_gateway.util.handler.handle_unexpected_exception
 @fs_gateway.util.handler.limit_usage
-@fs_gateway.util.handler.handle_requests_exception
 def _post(environ):
     #
     # Params.

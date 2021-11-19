@@ -9,20 +9,6 @@ import traceback
 import fs_gateway.controller.datastore
 
 
-def handle_requests_exception(dispatch_func):
-    def wrapper(environ, params):
-        try:
-            return dispatch_func(environ, params)
-
-        except requests.Timeout:
-            return {'code': '504', 'message': 'Network Timeout'}
-
-        except requests.ConnectionError:
-            return {'code': '504', 'message': 'Network Connection Error'}
-
-    return wrapper
-
-
 def handle_unexpected_exception(dispatch_func):
     def wrapper(*args, **kwargs):
         try:

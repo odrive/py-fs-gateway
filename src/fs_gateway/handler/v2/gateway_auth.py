@@ -43,7 +43,6 @@ def handle(environ):
 # POST /v2/gateway_auth
 @fs_gateway.util.handler.handle_unexpected_exception
 @fs_gateway.util.handler.limit_usage
-@fs_gateway.util.handler.handle_requests_exception
 def _post(environ, params):
     #
     # Params.
@@ -98,7 +97,6 @@ def _post(environ, params):
 # DELETE /v2/gateway_auth/<gateway.auth.access.token>
 @fs_gateway.util.handler.handle_unexpected_exception
 @fs_gateway.util.handler.limit_usage
-@fs_gateway.util.handler.handle_requests_exception
 def _delete_gateway_auth(environ, params):
     assert params.get('gateway.auth.access.token')
 
