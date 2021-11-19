@@ -30,15 +30,15 @@ def handle(environ):
 @fs_gateway.util.handler.handle_unexpected_exception
 @fs_gateway.util.handler.limit_usage
 @fs_gateway.util.handler.handle_requests_exception
-def _post(environ, params):
+def _post(environ):
     #
     # Params.
     #
 
-    params.update({
+    params = {
         # From body.
         'gateway.auth.refresh.token': None,
-    })
+    }
 
     # Load body.
     params.update(json.load(environ['wsgi.input']) if environ.get('wsgi.input') else {})
