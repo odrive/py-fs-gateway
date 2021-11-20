@@ -91,6 +91,9 @@ def _refresh(refresh_token):
     access_token = ''.join(
         random.SystemRandom().choice(
             string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(32))
+    refresh_token = ''.join(
+        random.SystemRandom().choice(
+            string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(32))
 
     # Persist session.
     fs_gateway.controller.datastore.put(
@@ -102,6 +105,14 @@ def _refresh(refresh_token):
             'gateway.auth.refresh.token': refresh_token,
         },
         'access'
+    )
+    fs_gateway.controller.datastore.put(
+        refresh_token,
+        {
+            'gateway.auth.path': refresh_auth.get('gateway.auth.path'),
+            'gateway.auth.writable': refresh_auth.get('gateway.auth.writable'),
+        },
+        'refresh'
     )
 
     return {
