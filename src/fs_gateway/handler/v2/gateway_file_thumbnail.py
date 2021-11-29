@@ -25,7 +25,7 @@ def handle(environ):
 
     delegate_func = '_{}{}'.format(
         environ['REQUEST_METHOD'].lower(),
-        '_gateway_metadata' if params['gateway.metadata.id'] else ''
+        '_gateway_file_thumbnail' if params['gateway.metadata.id'] else ''
     )
     if delegate_func in globals():
         return eval(delegate_func)(environ, params)
@@ -45,7 +45,7 @@ def handle(environ):
 @fs_gateway.util.handler.load_path
 @fs_gateway.util.handler.check_read_permission
 @fs_gateway.util.handler.handle_file_system_io_error
-def _get_gateway_metadata(environ, params):
+def _get_gateway_file_thumbnail(environ, params):
     return _get_content_custom_preview(environ, params, 512)
 
 
