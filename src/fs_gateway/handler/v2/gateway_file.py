@@ -31,7 +31,7 @@ def handle(environ):
 
     # Unknown.
     return {
-        'code': '404',
+        'code': '400',
         'message': 'Not found.'
     }
 
