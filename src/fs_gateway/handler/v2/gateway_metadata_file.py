@@ -28,7 +28,7 @@ def handle(environ):
 
     delegate_func = '_{}{}'.format(
         environ['REQUEST_METHOD'].lower(),
-        '_gateway_metadata' if params['gateway.metadata.id'] else ''
+        '_gateway_metadata_file' if params['gateway.metadata.id'] else ''
     )
     if delegate_func in globals():
         return eval(delegate_func)(environ, params)
@@ -43,7 +43,7 @@ def handle(environ):
 # Upload file to root.
 # POST /v2/gateway_metadata_file
 def _post(environ, params):
-    return _post_gateway_metadata(environ, params)
+    return _post_gateway_metadata_file(environ, params)
 
 
 # Upload file to folder.
@@ -54,7 +54,7 @@ def _post(environ, params):
 @fs_gateway.util.handler.load_path
 @fs_gateway.util.handler.check_write_permission
 @fs_gateway.util.handler.handle_file_system_io_error
-def _post_gateway_metadata(environ, params):
+def _post_gateway_metadata_file(environ, params):
 
     #
     # Load params.
@@ -137,7 +137,7 @@ def _post_gateway_metadata(environ, params):
 @fs_gateway.util.handler.load_path
 @fs_gateway.util.handler.check_write_permission
 @fs_gateway.util.handler.handle_file_system_io_error
-def _put_gateway_metadata(environ, params):
+def _put_gateway_metadata_file(environ, params):
     assert params.get('gateway.metadata.id')
 
     #
