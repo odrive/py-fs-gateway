@@ -255,7 +255,7 @@ def update_config(config):
 
 _config = {
     'usage.interval.seconds': 10,  # number of seconds
-    'usage.count.max': 1000,  # max requests within usage interval
+    'usage.count.max': 25,  # max requests within usage interval
     'auth.duration.seconds': 86400  # session duration
 }
 

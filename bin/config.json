@@ -1,6 +1,6 @@
 {
-  "fs_gateway.util.handler.usage.interval.seconds": 1,
-  "fs_gateway.util.handler.usage.count.max": 60,
+  "fs_gateway.util.handler.usage.interval.seconds": 10,
+  "fs_gateway.util.handler.usage.count.max": 25,
   "fs_gateway.util.handler.auth.duration.seconds": 86400,
 
   "fs_gateway.wsgi.log.enable": true,
