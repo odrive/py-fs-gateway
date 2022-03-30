@@ -88,7 +88,8 @@ def _post(environ, params):
         'content': json.dumps({
             'gateway.auth.access.token': authorization.get('gateway.auth.access.token'),
             'gateway.auth.refresh.token': authorization.get('gateway.auth.refresh.token'),
-            'gateway.auth.metadata.id': authorization.get('gateway.auth.metadata.id')
+            'gateway.auth.metadata.id': authorization.get('gateway.auth.metadata.id'),
+            'gateway.auth.id': None,
         }),
     }
 
